@@ -5,317 +5,123 @@
     Description:
         Bar Web Portal
 */
-select:focus {
-    outline: none;
-}
-body {
-    font-family: Arial, sans-serif;
-    font-size: 0.7em;
+html, body, .glass::before {
+    font-family: 'Century Gothic', Verdana, sans-serif;
+    font-size: 100%;
+    color: white;
     margin: 0;
     padding: 0;
-}
-.clear {
-    clear: both;
-}
-#head {
-    height: 95px;
-    background: #000000;
-    color: #ffffff;
-}
-#head h1 {
-    font-size: 3em;
-    float: left;
-    margin: 27px 55px;
-    font-weight: normal;
-}
-#head > ul {
-    float: right;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    margin: 27px 55px 27px 0;
-    display: inline-block;
-    width: auto;
-}
-#head > ul > li {
-    font-size: 1.6em;
-    display: inline;
-    margin: 0 15px;
-    margin: 0 0;
-    padding: 0 15px;
-    border-left: 1px solid #ffffff;
-}
-#head > ul > li.sub_menu > ul {
-    display: none;
-    float: right;
-    list-style: none;
-    padding: 0;
-    margin: 5px 55px 0px 0;
-    position: absolute;
     width: 100%;
-}
-#head > ul > li.sub_menu > ul > li {
-    font-size: 0.9em;
-    display: inline;
-    margin: 0 0;
-    padding: 0 15px;
-    border-left: 1px solid #ffffff;
-}
-#head > ul > li.first, #head > ul > li > ul > li.first {
-    padding: 15px;
-    border: none;
-}
-#head > ul > li > a, #head > ul > li > ul > li > a {
-    color: #ffffff;
-    text-decoration: none;
-}
-#login_box {
-    width: 400px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 2px solid #b6b6b6;
-    border-radius: 2px;
-}
-#form_box {
-    width: 816px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 2px solid #b6b6b6;
-    border-radius: 2px;
+    height: 100%;
     overflow: hidden;
 }
-#form_box .col {
-    float: left;
-    width: 400px;
-    margin: 4px;
-}
-#confpassword, #username, #password, input[type='text'] {
-    padding: 2px 4px 0;
-    margin: 0 0 33px;
-    width: 388px;
-    height: 33px;
-    background: #eeeeee;
-    font-family: Arial, sans-serif;
-    font-size: 1.3em;
-    border: 1px solid #aaaaaa;
-}
-input[type='file'] {
-    padding: 8px 4px 2px;
-    margin: 0 0 33px;
-    width: 388px;
-    height: 25px;
-    background: #eeeeee;
-    font-family: Arial, sans-serif;
-    font-size: 1.3em;
-    border: 1px solid #aaaaaa;
-    color: #aaaaaa;
-}
-#form_box textarea {
-    padding: 2px 4px 0;
-    margin: 0 0 6px;
-    width: 388px;
-    height: 60px;
-    background: #eeeeee;
-    font-family: Arial, sans-serif;
-    font-size: 1.3em;
-    border: 1px solid #aaaaaa;
-}
-#login_btn, #form_btn {
-    background: #000000;
-    border: none;
-    padding: 0;
-    margin: 0;
-    color: #ffffff;
-    font-size: 1.3em;
-    cursor: pointer;
-    width: 205px;
-    height: 35px;
-}
-#footer {
-    background: #666666;
-    height: 15px;
-    color: #ffffff;
-    padding: 5px;
-    position: fixed;
+.glass {
     width: 100%;
-    bottom: 0;
+    height: 100%;
+    overflow: hidden;
+    margin: 0 auto;
 }
-#footer p {
-    padding: 0;
-    margin: 0;
-    font-size: 1em;
-}
-.order_list {
-    width: 100%;
-    border-collapse: collapse;
-}
-.order_list thead {
-    background: #cccccc;
-    font-size: 1.3em;
-}
-.order_list, .order_list th, .order_list td {
-    border: 1px solid #b6b6b6;
-}
-.order_list td {
-    padding: 24px;
-    font-size: 1.3em;
-    font-weight: bold;
-    color: #444444;
-}
-.order_list tr.status_0, .order_items td.status_0 {
-    background: #ffefbf;
-}
-.order_list tr.status_1, .order_items td.status_1 {
-    background: #fbdec0;
-}
-.order_list tr.status_2, .order_items td.status_2 {
-    background: #f3fbc1;
-}
-.order_list tr.status_3, .order_items td.status_3 {
-    background: #cdf8c0;
-}
-.order_list tr.status_4, .order_items td.status_4 {
-    background: #8c0000;
-}
-.order_list tr td, .order_list tr td select, .order_items tr td, .order_items tr td select {
-    color: #444444;
-}
-.order_list tr.status_4 td, .order_items td.status_4 {
-    color: #ffffff;
-}
-.order_list tr.status_4 td select, .order_items td.status_4 select {
-    color: #ffffff;
-    background-position: right bottom;
-}
-.order_list td.order_id {
-    background: #ffffff;
-    color: #444444 !important;
-}
-.order_list td select, .order_items td select {
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    font-size: 1em;
-    background: none;
-    border: none;
-    -webkit-appearance: none;
-    width: 100%;
-    padding-right: 20px;
-    height: 17px;
-}
-.order_list .order_status_select {
-    padding: 0 24px;
-}
-.order_list tr td select, .order_items td select {
-    color: #444444;
-    background: url(/img/select_down.png) no-repeat right top;
-    height: 65px;
-}
-a.view_order_btn {
-    background: #444444;
-    color: #ffffff;
-    border-radius: 8px;
-    padding: 14px;
-    text-decoration: none;
+.glass {
+    display: block;
+    position: relative;
+    background-color: black;
 }
 
-/*admin */
-.ingredient_list, .category_list {
-    list-style: none;
-    margin: 5px 0;
-    padding: 3px;
-    border: 1px solid #dddddd;
-    height: 235px;
-    overflow: auto;
+.glass::before {
+    z-index: -1;
+    display: block;
+    position: absolute;
+    content: ' ';
 }
-.ingredient_list .ingredient, .category_list .category {
-    margin: 0;
-    padding: 0;
-    font-size: 1.3em;
-    margin: 5px 0 0;
+body {
+    background: url(/img/bg-img.jpg) no-repeat;
+    background-size: cover;
 }
-.ingredient_list .ingredient input[type='text'], .category_list .category input[type='text'] {
-    font-size: 1em;
-    width: 360px;
-    margin: 0;
+.glass::before {
+    background-image: url('/img/bg-img.jpg');
+    /* Prefix free isn't picking up this one */
+    -webkit-filter: blur(5px);
+    filter: blur(5px);
+    background-size: cover;
+    opacity: 0.5;
 }
-#form_box .ingredient_list .ingredient textarea, #form_box .category_list .category textarea {
-    font-size: 1em;
-    width: 360px;
-    margin: 5px 0 0 18px;
-}
-.ingredient_list .add_new, .category_list .add_new {
-    margin: 5px 0 0 18px;
-    font-size: 1.4em;
-    cursor: pointer;
-    padding: 8px 4px 2px;
-    width: 360px;
-    height: 25px;
-    background: #eeeeee;
-    font-family: Arial, sans-serif;
-    font-size: 1.3em;
-    border: 1px solid #aaaaaa;
-    color: #aaaaaa;
-}
-
-.modalContainer                     {z-index: 3000; position:fixed; top:0; left:0;}
-.modalPopup                         {position: fixed; background:#ffffff; padding:20px 0; border:2px solid #cccccc;}
-.tooltipClose,
-.modalClose                         {position: absolute; top:-22px; right:-22px; width:40px; height:40px; background: url(/img/close.png) no-repeat center; cursor:pointer; z-index: 3001;}
-.modalContent                       {overflow: auto; }
-.loader_centre {width: 256px; margin: 40px auto;}
-
-.large_text {text-align: center; font-size: 1.6em;}
-.error {color: #8c0000;}
-.success {color: #22aa22;}
-
-/* modal window */
-.order_info {
-    font-size: 1.4em;
-    width: 100%;
-}
-.order_info th {
-    text-align: left;
-}
-.order_info .order_instruction {
-    font-family: Arial, sans-serif;
-    font-size: 1em;
-    width: 100%;
-    border: 1px solid #cccccc;
-}
-
-
-.order_items {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1.4em;
-}
-.order_items thead {
-    background: #cccccc;
-}
-.order_items tr.row_odd {
-    background: #ffffff;
-}
-.order_items tr.row_even {
-    background: #eeeeee;
-}
-.order_items th, .order_items td {
-    border-right: 1px solid #999999;
-}
-.order_items th:last-child, .order_items tr td:last-child {
-    border: none;
-}
-.order_items .edit_btn {
+.logo {
+    font-weight: lighter;
+    position: absolute;
+    z-index: 1;
     text-align: center;
-    background: #444444;
-    border-radius: 4px;
-    padding: 8px 35px;
-    color: #ffffff;
-    text-decoration: none;
+    font-size: 2rem;
+    width: 100%;
 }
-.order_items .save_btn {
-    background-color: #30883b;
-    padding: 8px 31px;
+
+#requests {
+    width: 80%;
+    height: 50%;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    margin: 10%;
 }
+
+#request_form h1 {
+    font-weight: normal;
+    color: #8d9291;
+    margin: 3px;
+    padding: 0;
+    text-align: center;
+}
+#request_form h1::before, #request_form h1::after {
+    position: absolute;
+    left: 5%;
+    top: 0;
+    background-image: url('/img/double-chevron-up.svg');
+    content: ' ';
+    display: block;
+    width: 3rem;
+    height: 3rem;
+    transition: transform 0.2s ease-out 0.5s;
+}
+#request_form h1::after {
+    left: auto;
+    right: 5%;
+}
+
+.glass.down {
+    /* Fallback for browsers that don't support 3D Transforms */
+    -webkit-transform: translateY(100%) translateY(-3rem);
+    -webkit-transform: translateY(100%) translateY(-3rem) translateZ(0);
+    transform: translateY(100%) translateY(-3rem);
+    transform: translateY(100%) translateY(-3rem) translateZ(0);
+}
+
+.glass.down::before {
+    -webkit-transform: translateY(-100%) translateY(3rem);
+    -webkit-transform: translateY(-100%) translateY(3rem) translateZ(0);
+    transform: translateY(-100%) translateY(3rem);
+    transform: translateY(-100%) translateY(3rem) translateZ(0);
+}
+
+.glass.up {
+    -webkit-transform: translateY(4rem);
+    -webkit-transform: translateY(4rem) translateZ(0);
+    transform: translateY(4rem);
+    transform: translateY(4rem) translateZ(0);
+}
+.glass.up::before {
+    -webkit-transform: translateY(-4rem);
+    -webkit-transform: translateY(-4rem) translateZ(0);
+    transform: translateY(-4rem);
+    transform: translateY(-4rem) translateZ(0);
+}
+.glass, .glass::before {
+    transition: -webkit-transform 0.5s ease-out;
+    transition: transform 0.5s ease-out;
+}
+.up h1::before, .up h1::after {
+    -webkit-transform: rotate(180deg);  
+    transform: rotate(180deg);  
+}
+
 /* loader */
 #movingBallG{
     position:relative;

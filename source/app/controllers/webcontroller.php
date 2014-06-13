@@ -17,8 +17,7 @@ class WebController extends Controller {
         global $auth;
         $this->level = 0;
         if (!$this->checkWebContinue()) return;
-        $this->_template->headIncludes[] = '<script type="text/javascript" src="/js/modal.popup.js"></script>';
-        $this->_template->headIncludes[] = '<script type="text/javascript" src="/js/main.functions.js"></script>';
+        
         $this->set('title', 'TraxSelector');
         if (isset($auth->config['venue_id']) && isset($auth->config['event_id'])) {
             $this->set('requests', $this->api->Api->requests($auth->config['venue_id'], $auth->config['event_id']));

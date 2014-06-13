@@ -16,15 +16,23 @@
         }
         ?>
         <script type="text/javascript">
+        function toggle() {
+            var button = document.querySelector('.toggle');
+            var overlay = document.querySelector('.glass');
+            if (overlay.className === 'glass down') {
+                overlay.className = 'glass up';
+            } else {
+                overlay.className = 'glass down';
+            }
+        }
         $(document).ready(function() {
             
         });
         </script>
     </head>
     <body>
-        <div id="head">
-            <img src="/img/logo.png" alt="TraxSelector" />
-        </div>
+        <h1 class="logo"><strong>Trax</strong>Selector<!--img src="/img/logo.png" alt="TraxSelector" width="300" /--></h1>
+        
 
          
     

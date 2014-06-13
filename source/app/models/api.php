@@ -3,11 +3,18 @@
  * Bar App - 2014
  */
 class Api extends Model {
-    public function requests($venueID=0, $eventID=0) {
+    public function requests($venueID=0, $eventID=0, $ordering=false) {
         global $db;
         $list = array();
         if ($venueID != 0 && $eventID != 0) {
-            $requests = $db->dbResult($db->dbQuery("SELECT * FROM tbl_request WHERE venue_id=$venueID AND event_id=$eventID ORDER BY rating DESC"));
+            $order = "";
+            if ($ordering) {
+                $order = "ORDER BY r.rating DESC";
+            }
+            $requests = $db->dbResult($db->dbQuery("SELECT r.*, a.artist, t.title FROM tbl_request AS r
+                                                    INNER JOIN tbl_artist AS a ON a.id=r.artist_id
+                                                    INNER JOIN tbl_title AS t ON t.id=r.title_id
+                                                    WHERE r.venue_id=$venueID AND r.event_id=$eventID $order"));
             if ($requests[1] > 0) {
                 foreach ($requests[0] as $request) {
                     $list[$request['id']] = $request;
