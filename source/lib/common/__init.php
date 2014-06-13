@@ -164,6 +164,28 @@ class common {
         // Return the output
         return $output;
     }
+    
+    public function getMacAddr() {
+        $result = null;
+        exec('netstat -ie', $result);
+        if(is_array($result)) {
+          $iface = array();
+          foreach($result as $key => $line) {
+            if($key > 0) {
+              $tmp = str_replace(" ", "", substr($line, 0, 10));
+              if($tmp <> "") {
+                $macpos = strpos($line, "HWaddr");
+                if($macpos !== false) {
+                  $iface[] = array('iface' => $tmp, 'mac' => strtolower(substr($line, $macpos+7, 17)));
+                }
+              }
+            }
+          }
+          return $iface[0]['mac'];
+        } else {
+          return "notfound";
+        }
+    }
 
     /**
     * function: escape_data
@@ -448,14 +470,15 @@ class common {
     }
     
     // controller loader \\
-    public function loadController($controller=null, $action=null) {
+    public function loadController($controller=null, $action=null, $query=array()) {
+        global $auth;
         if (!is_null($controller)) {
-            $model = rtrim($controller, 's');
+            $model = ucfirst(rtrim($controller, 's'));
             $controllerName = $controller;
             $controller = strtolower($controller);
-            require_once (ROOT . DS . 'lib' . DS . 'app'. DS . 'controllers' . DS .$controller.'.php');
+            require_once (ROOT . DS . 'app'. DS . 'controllers' . DS .$controller.'controller.php');
             $controllerName = $controller.'Controller';
-            return new $controllerName($model,$controllerName, $action);
+            return new $controllerName($model,$controllerName, $action, $query, true);
         }
     }
 }

@@ -10,6 +10,7 @@ class Controller {
     protected $_action;
     protected $_template;
     protected $level = 0;
+    protected $system = false;
     var $isJSON = true;
     var $json = array();
     
@@ -23,6 +24,9 @@ class Controller {
         $this->_template = new Template($controller,$action, $model);
         $this->_template->$model = $this->$model;
         $common->isPage = false;
+        if (func_num_args() > 4) {
+            $this->system = func_get_arg(4);
+        }
     }
  
     function set($name,$value) {
@@ -43,7 +47,7 @@ class Controller {
         return false;
     }
 
-    public function commands() {
+    public function commands($intern=false) {
         $methods = get_class_methods($this);
         $list = array();
         $hiddenMethods = array('commands', '__construct', 'set', 'checkContinue', 'checkWebContinue', '__destruct');
@@ -62,26 +66,31 @@ class Controller {
                 }
             }
         }
-        $this->json = $list;
-        
+        if (!$intern) {
+            $this->json = $list;
+        } else {
+            return $list;
+        }
     }
     
     function __destruct() {
-        global $auth, $common;
-        $this->_template->{$this->_model}->_controller = $this;
-        if ($this->level > $auth->level) {
-            $curURL = '|'.str_replace('/', '|', $common->getParam('url', 'get'));
-            header("Location: /auth/login/$curURL/permission");
-            return false;
-        }
-        if ($this->isJSON) {
-            header("Content-Type: text/javascript");
-            if (!empty($this->json)) {
-                echo json_encode($this->json);
+        if (!$this->system) {
+            global $auth, $common;
+            $this->_template->{$this->_model}->_controller = $this;
+            if ($this->level > $auth->level) {
+                $curURL = '|'.str_replace('/', '|', $common->getParam('url', 'get'));
+                header("Location: /auth/login/$curURL/permission");
+                return false;
             }
-        }
-        if ($common->isPage) {
-            $this->_template->render();
+            if ($this->isJSON) {
+                header("Content-Type: text/javascript");
+                if (!empty($this->json)) {
+                    echo json_encode($this->json);
+                }
+            }
+            if ($common->isPage) {
+                $this->_template->render();
+            }
         }
     }
          

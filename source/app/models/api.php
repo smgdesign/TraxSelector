@@ -3,31 +3,31 @@
  * Bar App - 2014
  */
 class Api extends Model {
-    public function getCategories($menuID=array()) {
-        if (is_array($menuID) && !empty($menuID)) {
-            $tbl = array('c'=>'tbl_category');
-            $joins = array(
-                array('table'=>'tbl_category_hooks', 'as'=>'ch', 'on'=>array('ch.cat_id', '=', 'c.id'))
-            );
-            $cols = array(
-                'c'=>array('id', 'title', 'desc'),
-                'ch'=>array('menu_id')
-            );
-            $cond = array('ch'=>array(
-                    'join'=>'AND',
-                    array(
-                        'col'=>'menu_id',
-                        'operand'=>'IN',
-                        'value'=>$menuID
-                    )
-                )
-            );
-            $cats = \data\collection::buildQuery("SELECT", $tbl, $joins, $cols, $cond);
-            if ($cats[1] > 0) {
-                return $cats[0];
+    public function requests($venueID=0, $eventID=0) {
+        global $db;
+        $list = array();
+        if ($venueID != 0 && $eventID != 0) {
+            $requests = $db->dbResult($db->dbQuery("SELECT * FROM tbl_request WHERE venue_id=$venueID AND event_id=$eventID ORDER BY rating DESC"));
+            if ($requests[1] > 0) {
+                foreach ($requests[0] as $request) {
+                    $list[$request['id']] = $request;
+                }
             }
         }
-        return array();
+        return $list;
+    }
+    public function getLinks($venueID=0) {
+        global $db;
+        $list = array();
+        if ($venueID != 0) {
+            $links = $db->dbResult($db->dbQuery("SELECT link FROM tbl_items WHERE venue_id=$venueID"));
+            if ($links[1] > 0) {
+                foreach ($links[0] as $link) {
+                    $list[] = $link['link'];
+                }
+            }
+        }
+        return $list;
     }
 }
 ?>

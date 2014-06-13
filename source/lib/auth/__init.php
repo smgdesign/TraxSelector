@@ -17,11 +17,15 @@ class authentication {
         global $session, $db, $common;
         require_once ROOT . DS . 'lib' . DS . '/enc/__init.php';
         $this->encrypt = new Bcrypt();
-        $config = $db->dbResult($db->dbQuery("SELECT name, value FROM tbl_config"));
-        if ($config[1] > 0) {
-            foreach ($config[0] as $conf) {
-                $this->config[$conf['name']] = $conf['value'];
-            }
+        $venue = $db->dbResult($db->dbQuery("SELECT value FROM tbl_config WHERE name='{$common->getMacAddr()}'"));
+        if ($venue[1] > 0) {
+            $this->config['venue_id'] = $venue[0][0]['value'];
+        }
+        $event = $db->dbResult($db->dbQuery("SELECT id, title, date FROM tbl_event WHERE venue_id={$this->config['venue_id']} AND date <= NOW() ORDER BY date DESC LIMIT 1"));
+        if ($event[1] > 0) {
+            $this->config['event_id'] = $event[0][0]['id'];
+            $this->config['event_title'] = $event[0][0]['title'];
+            $this->config['event_date'] = $event[0][0]['date'];
         }
         if (!is_null($session->getVar('id')) && $session->getVar('user_agent') == md5($common->getParam('HTTP_USER_AGENT', 'server'))) {
             $cur = new DateTime();
@@ -29,6 +33,9 @@ class authentication {
             $this->level = $session->getVar('level');
             $session->addVar('last_action', $cur->getTimestamp());
         }
+    }
+    public function setAPI($key='') {
+        $this->config['api_key'] = $key;
     }
     public function login($username='', $pass='', $nextURL='') {
         global $common, $db, $session;
@@ -111,56 +118,18 @@ class authentication {
     
     public function checkDevice() {
         global $common, $db, $session;
-        $ipAddr = ip2long($common->getParam('REMOTE_ADDR', 'server'));
-        $machineName = gethostbyaddr($common->getParam('REMOTE_ADDR', 'server'));
-        if (is_null($session->getVar('UUID'))) {
-            if (!is_null($common->getParam('UUID'))) {
-                $venueID = $session->getVar('venue_id');
-                if (is_null($venueID)) {
-                    $venueID = 0;
-                }
-                $device = $this->getDevice();
-                if (is_array($device)) {
-                    $sync = new DateTime($device['last_sync']);
-                    if ($sync !== false) {
-                        if (!is_null($common->getParam('sync'))) {
-                            $dbconf = $this->config;
-                            if (isset($dbconf['last_updated'])) {
-                                if ($device['venue_id'] != $venueID) {
-                                    // need to insert as not been here before \\
-                                    $devID = $db->dbQuery("INSERT INTO tbl_device (name, ip_addr, UUID, venue_id) VALUES ('$machineName', $ipAddr, '{$common->getParam('UUID')}', $venueID)", 'id');
-                                    return array('status'=>'new', 'sync'=>true, 'device_id'=>$devID);
-                                } else {
-                                    $last = new DateTime($dbconf['last_updated']);
-                                    if ($last > $sync) {
-                                        // means we need to resync \\
-                                        return array('status'=>'exists', 'sync'=>true, 'device_id'=>$device['id']);
-                                    } else {
-                                        return array('status'=>'exists', 'sync'=>false, 'device_id'=>$device['id']);
-                                    }
-                                }
-                            } else {
-                                // now insert this in the db \\
-                                $devID = $db->dbQuery("INSERT INTO tbl_device (name, ip_addr, UUID, venue_id) VALUES ('$machineName', $ipAddr, '{$common->getParam('UUID')}', $venueID)", 'id');
-                                return array('status'=>'new', 'sync'=>true, 'device_id'=>$devID);
-                            }
-                        }
-                    } else {
-                        // now insert this in the db \\
-                        $devID = $db->dbQuery("INSERT INTO tbl_device (name, ip_addr, UUID, venue_id) VALUES ('$machineName', $ipAddr, '{$common->getParam('UUID')}', $venueID)", 'id');
-                        return array('status'=>'new', 'sync'=>true, 'device_id'=>$devID);
-                    }
-                } else {
-                    // now insert this in the db \\
-                    $devID = $db->dbQuery("INSERT INTO tbl_device (name, ip_addr, UUID, venue_id) VALUES ('$machineName', $ipAddr, '{$common->getParam('UUID')}', $venueID)", 'id');
-                    return array('status'=>'new', 'sync'=>true, 'device_id'=>$devID);
-                }
-            } else {
-                return array('status'=>'unknown', 'sync'=>true);
-            }
+        $UUID = $common->getParam('UUID');
+        $exists = $db->dbResult($db->dbQuery("SELECT id FROM tbl_mobile_device WHERE UDID='$UUID'"));
+        if ($exists[1] > 0) {
+            // this exists \\
+            return array('id'=>$exists[0][0]['id'], 'status'=>'existing');
         } else {
-            // means already exists \\
-            return true;
+            $ins = $db->dbQuery("INSERT INTO tbl_mobile_device (UDID) VALUES ('$UUID')", 'id');
+            if ($ins) {
+                return array('id'=>$ins, 'status'=>'new');
+            } else {
+                return array('status'=>'error');
+            }
         }
     }
     

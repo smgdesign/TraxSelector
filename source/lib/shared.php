@@ -23,4 +23,5 @@ $common->unregisterGlobals();
 /*header("Cache-Control: no-cache, no-store, must-revalidate, private");
 header("Expires: 0");
 header("Pragma: no-cache");*/
+$auth->setAPI('9AdwAbXRB0D34ue4lN1G');
 $common->callHook();

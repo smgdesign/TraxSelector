@@ -4,51 +4,28 @@
  * Dettol / Lysol - 2013
  */
 class WebController extends Controller {
+    var $api = null;
     public function __construct($model, $controller, $action) {
         global $common;
         parent::__construct($model, $controller, $action);
         $this->isJSON = false;
         $this->_template->xhr = false;
+        $this->api = $common->loadController('api');
         $common->isPage = true;
     }
     public function index() {
-        $this->level = 1;
+        global $auth;
+        $this->level = 0;
         if (!$this->checkWebContinue()) return;
         $this->_template->headIncludes[] = '<script type="text/javascript" src="/js/modal.popup.js"></script>';
-        $this->_template->headIncludes[] = '<script type="text/javascript" src="/js/order.list.functions.js"></script>';
-        $this->set('title', 'Web Portal');
-        $this->set('orders', $this->Web->orders('list'));
-    }
-    public function test() {
-        global $common;
-        $this->set('title', 'Test Section');
-        $data = $common->curlPOSTRequest(
-            'http://bar.smgdev.co.uk/api/__init',
-            array(
-                'api_key'=>'912ad19545884e051c467e19e51e9e8e',
-                'UUID'=>'1701F9A0-767F-441D-9E3C-FETSR',
-                'sync'=>true,
-                'QR'=>'1:2:1',
-                'override'=>true
-            ),
-            'json'
-        );
-        $this->set('data', $data);
-        if (!is_null($common->getParam('submitted'))) {
-            $place = $common->curlPOSTRequest(
-                'http://bar.smgdev.co.uk/api/order/place',
-                array_merge(
-                    array(
-                        'api_key'=>'912ad19545884e051c467e19e51e9e8e',
-                        'UUID'=>'1701F9A0-767F-441D-9E3C-FETSR'
-                    ),
-                    $common->getAllParam()
-                ),
-                'json'
-            );
-            $this->set('order', $place);
+        $this->_template->headIncludes[] = '<script type="text/javascript" src="/js/main.functions.js"></script>';
+        $this->set('title', 'TraxSelector');
+        if (isset($auth->config['venue_id']) && isset($auth->config['event_id'])) {
+            $this->set('requests', $this->api->Api->requests($auth->config['venue_id'], $auth->config['event_id']));
+            $this->set('links', $this->api->Api->getLinks($auth->config['venue_id']));
         }
     }
+    
     public function view($id='') {
         global $common;
         $this->level = 1;
