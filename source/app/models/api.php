@@ -16,8 +16,15 @@ class Api extends Model {
                                                     INNER JOIN tbl_title AS t ON t.id=r.title_id
                                                     WHERE r.venue_id=$venueID AND r.event_id=$eventID $order"));
             if ($requests[1] > 0) {
-                foreach ($requests[0] as $request) {
+                foreach ($requests[0] as $i=>$request) {
                     $list[$request['id']] = $request;
+                    $list[$request['id'].'1'] = $request;
+                    $list[$request['id'].'2'] = $request;
+                    $list[$request['id'].'3'] = $request;
+                    $list[$request['id'].'4'] = $request;
+                    $list[$request['id'].'5'] = $request;
+                    $list[$request['id'].'6'] = $request;
+                    $list[$request['id'].'7'] = $request;
                 }
             }
         }

@@ -56,19 +56,35 @@ body {
 
 #requests {
     width: 80%;
-    height: 50%;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.4);
+    height: 68%;
     position: absolute;
-    margin: 10%;
+    margin: 7% 10%;
+    overflow: scroll;
 }
 
+.list {
+    width: 100%;
+    border-radius: 10px;
+    border-spacing: 0 8px;
+}
+.list tr {
+    background: rgba(0, 0, 0, 0.7);
+}
+.list tr td {
+    padding: 10px 10px;
+}
+
+.glass_content {
+    width: 80%;
+    margin: 0 auto;
+}
 #request_form h1 {
     font-weight: normal;
     color: #8d9291;
     margin: 3px;
     padding: 0;
     text-align: center;
+    cursor: pointer;
 }
 #request_form h1::before, #request_form h1::after {
     position: absolute;
@@ -84,6 +100,13 @@ body {
 #request_form h1::after {
     left: auto;
     right: 5%;
+}
+
+#request_form input.text {
+    width: 40%;
+    font-size: 1.3rem;
+    padding: 8px;
+    margin: 8px;
 }
 
 .glass.down {
