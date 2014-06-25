@@ -20,10 +20,13 @@
     <h1 class="toggle" onclick="toggle();">Request Song</h1>
     <div class="glass_content">
         <h2>Fill in the form to request your song</h2>
-        <form action="/api/request/submit" method="post">
+        <form id="request_form" action="/api/request/submit" method="post">
             <input type="text" name="artist" class="text auto_comp" id="artist_list" placeholder="Artist" />
             <input type="text" name="title" class="text auto_comp" id="title_list" placeholder="Title" />
-            <input type="submit" name="send" value="Send Request" />
+            <input type="text" name="dedicate" class="text" id="dedicate" placeholder="Dedicate to" />
+            <textarea name="message" class="text" id="message" placeholder="Any comments" rows="4"></textarea>
+            <div class="clear"></div>
+            <input type="submit" name="send" class="button" value="Send Request" />
             <input type="hidden" name="submitted" value="TRUE" />
         </form>
     </div>

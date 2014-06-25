@@ -102,11 +102,20 @@ body {
     right: 5%;
 }
 
-#request_form input.text {
+#request_form .text {
     width: 40%;
     font-size: 1.3rem;
     padding: 8px;
     margin: 8px;
+    vertical-align: top;
+}
+#request_form .button {
+    background: #005daa;
+    border: 1px solid #444444;
+    color: #ffffff;
+    padding: 8px;
+    margin: 8px;
+    font-size: 1.3rem;
 }
 
 .glass.down {

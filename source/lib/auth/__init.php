@@ -21,17 +21,20 @@ class authentication {
         if ($venue[1] > 0) {
             $this->config['venue_id'] = $venue[0][0]['value'];
         }
-        $event = $db->dbResult($db->dbQuery("SELECT id, title, date FROM tbl_event WHERE venue_id={$this->config['venue_id']} AND date <= NOW() ORDER BY date DESC LIMIT 1"));
+        $event = $db->dbResult($db->dbQuery("SELECT id, title, date, end_date FROM tbl_event WHERE venue_id={$this->config['venue_id']} AND date <= NOW() AND end_date >= NOW() ORDER BY date DESC LIMIT 1"));
         if ($event[1] > 0) {
             $this->config['event_id'] = $event[0][0]['id'];
             $this->config['event_title'] = $event[0][0]['title'];
             $this->config['event_date'] = $event[0][0]['date'];
-        }
-        if (!is_null($session->getVar('id')) && $session->getVar('user_agent') == md5($common->getParam('HTTP_USER_AGENT', 'server'))) {
-            $cur = new DateTime();
-            $this->loggedIn = true;
-            $this->level = $session->getVar('level');
-            $session->addVar('last_action', $cur->getTimestamp());
+            $this->config['event_end_date'] = $event[0][0]['end_date'];
+            if (!is_null($session->getVar('id')) && $session->getVar('user_agent') == md5($common->getParam('HTTP_USER_AGENT', 'server'))) {
+                $cur = new DateTime();
+                $this->loggedIn = true;
+                $this->level = $session->getVar('level');
+                $session->addVar('last_action', $cur->getTimestamp());
+            }
+        } else {
+            $this->config['event_id'] = null;
         }
     }
     public function setAPI($key='') {

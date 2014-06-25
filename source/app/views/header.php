@@ -26,7 +26,12 @@
             }
         }
         $(document).ready(function() {
-            
+            $("#request_form").submit(function(ev) {
+                ev.preventDefault();
+                $.ajax({
+                    
+                });
+            });
         });
         </script>
     </head>
