@@ -103,10 +103,10 @@ body {
 }
 
 #request_form .text {
-    width: 40%;
+    width: 43%;
     font-size: 1.3rem;
     padding: 8px;
-    margin: 8px;
+    margin: 11px;
     vertical-align: top;
 }
 #request_form .button {
@@ -154,11 +154,22 @@ body {
     transform: rotate(180deg);  
 }
 
+.large_text {text-align: center; font-size: 1.6rem;}
 /* loader */
+
+.loader_centre {
+    background: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    width: 80%;
+    padding: 40px 0;
+    display: none;
+}
+
 #movingBallG{
     position:relative;
     width:256px;
     height:20px;
+    margin: 0 auto;
 }
 
 .movingBallLineG{
@@ -167,11 +178,11 @@ body {
     top:8px;
     height:4px;
     width:256px;
-    background-color:#dddddd;
+    background-color:#999999;
 }
 
 .movingBallG{
-    background-color:#444444;
+    background-color:#ffffff;
     position:absolute;
     top:0;
     left:0;

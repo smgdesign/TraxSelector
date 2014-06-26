@@ -12,9 +12,12 @@
 class ApiController extends Controller {
     public function venue($request='init') {
         if (!empty($request)) {
-            if (method_exists($this, $request)) {
+            $method = 'venue_'.$request;
+            if (method_exists($this, $method)) {
                 $params = func_get_args();
-                $this->venue_{$request}(array_slice($params, 1));
+                call_user_func_array(array(&$this, $method), array_slice($params, 1));
+            } else {
+                $this->json = array('status'=>  \errors\codes::$__ERROR, 'return'=>'Unknown method');
             }
         }
     }
@@ -60,17 +63,25 @@ class ApiController extends Controller {
             $device = $auth->checkDevice();
             if (is_array($device) && $device['status'] == 'existing') {
                 if (!empty($request)) {
-                    if (method_exists($this, $request)) {
+                    $method = 'request_'.$request;
+                    if (method_exists($this, $method)) {
                         $params = func_get_args();
-                        $this->request_{$request}(array_slice($params, 1));
+                        call_user_func_array(array(&$this, $method), array_slice($params, 1));
                     }
                 }
             }
         }
     }
     
-    public function request_getall() {
-        
+    public function request_getall($mode='html') {
+        global $auth;
+        if ($mode == 'html') {
+            $requests = $this->Api->requests($auth->config['venue_id'], $auth->config['event_id']);
+            $this->json = array(
+                'html'=>$this->_template->listRequests($requests),
+                'status'=>  (count($requests) > 0) ? \errors\codes::$__FOUND : \errors\codes::$__EMPTY
+            );
+        }
     }
     
     public function request_nowplaying() {
@@ -78,24 +89,54 @@ class ApiController extends Controller {
     }
     
     public function request_submit() {
-        global $common;
+        global $auth, $common, $db;
         if (!is_null($common->getParam('submitted'))) {
             $artist = $common->getParam('artist');
             $title = $common->getParam('title');
             $dedicate = $common->getParam('dedicate');
             $message = $common->getParam('message');
-            if (!is_null($artist)) {
-                
+            $cont = true;
+            if (is_null($artist)) {
+                $cont = false;
             }
-            if (!is_null($title)) {
-                
+            if (is_null($title)) {
+                $cont = false;
             }
-            if (!is_null($dedicate)) {
-                
+            if ($cont) {
+                // get the artist ID - if empty then create new one \\
+                $artistID = $this->Api->getArtistByName(ucwords($artist));
+                $titleID = $this->Api->getTitleByName(ucwords($title));
+                // select the request - if it exists then add to the rating \\
+                $exist = $db->dbResult($db->dbQuery("SELECT id, rating FROM tbl_request WHERE title_id=$titleID AND artist_id=$artistID AND venue_id={$auth->config['venue_id']} AND event_id={$auth->config['event_id']}"));
+                if ($exist[1] > 0) {
+                    $rating = $exist[0][0]['rating']+1;
+                    $id = $exist[0][0]['id'];
+                    // now update the rating +1 and update the db \\
+                    $db->dbQuery("UPDATE tbl_request SET rating=$rating WHERE id=$id");
+                } else {
+                    $id = $db->dbQuery("INSERT INTO tbl_request (title_id, artist_id, date_requested, venue_id, event_id, rating) VALUES ($titleID, $artistID, NOW(), {$auth->config['venue_id']}, {$auth->config['event_id']}, 1)", 'id');
+                }
+                if (!is_null($dedicate) || !is_null($message)) {
+                    // insert a row for the dedication / message \\
+                    $db->dbQuery("INSERT INTO tbl_comments (request_id, dedicate, comment) VALUES ($id, '$dedicate', '$message')");
+                }
+                $this->json = array(
+                    'status'=>  \errors\codes::$__SUCCESS,
+                    'data'=>array(
+                        'id'=>$id
+                    )
+                );
+            } else {
+                $this->json = array(
+                    'status'=>  \errors\codes::$__ERROR,
+                    'return'=>'Artist and Title are required'
+                );
             }
-            if (!is_null($message)) {
-                
-            }
+        } else {
+            $this->json = array(
+                'status'=>  \errors\codes::$__ERROR,
+                'return'=>'Malformed form submission'
+            );
         }
         
     }

@@ -13,13 +13,44 @@ class authentication {
     var $loggedIn = false;
     var $level = 0;
     var $config = array();
+    protected $device = array();
     public function __construct() {
         global $session, $db, $common;
         require_once ROOT . DS . 'lib' . DS . '/enc/__init.php';
         $this->encrypt = new Bcrypt();
-        $venue = $db->dbResult($db->dbQuery("SELECT value FROM tbl_config WHERE name='{$common->getMacAddr()}'"));
+        if (is_null($common->getParam('UUID'))) {
+            // this is a static device \\
+            $ip = $common->getParam('REMOTE_ADDR', 'server');
+            $venue = $db->dbResult($db->dbQuery("SELECT c.value, d.id, v.type FROM tbl_config AS c
+                                                 LEFT JOIN tbl_device AS d ON d.IP=INET_ATON('$ip')
+                                                 LEFT JOIN tbl_device_venues AS v ON v.venue_id=c.value AND v.device_id=d.id AND v.type='static'
+                                                 WHERE c.name='{$common->getMacAddr()}'"));
+        } else {
+            // this is a mobile device \\
+            $venue = $db->dbResult($db->dbQuery("SELECT c.value, m.id, v.type FROM tbl_config AS c
+                                                 LEFT JOIN tbl_mobile_device AS m ON m.UDID='{$common->getParam('UUID')}'
+                                                 LEFT JOIN tbl_device_venues AS v ON v.venue_id=c.value AND v.device_id=m.id AND v.type='mobile'
+                                                 WHERE c.name='{$common->getMacAddr()}'"));
+        }
+        
         if ($venue[1] > 0) {
             $this->config['venue_id'] = $venue[0][0]['value'];
+            if (isset($venue[0][0]['id'])) {
+                $this->device['id'] = $venue[0][0]['id'];
+                $this->device['status'] = 'existing';
+            } else if (!is_null($common->getParam('UUID'))) {
+                $this->device['id'] = $this->addDevice($common->getParam('UUID'));
+                $this->device['status'] = 'new';
+            }
+            if (isset($venue[0][0]['type'])) {
+                $this->device['type'] = $venue[0][0]['type'];
+            } else if (!is_null($common->getParam('UUID'))) {
+                $this->device['type'] = 'mobile';
+                $this->addDeviceHook($this->device['id'], $this->config['venue_id']);
+            } else {
+                // means something isn't right \\
+                die("You are trying to access using an unregistered static device");
+            }
         }
         $event = $db->dbResult($db->dbQuery("SELECT id, title, date, end_date FROM tbl_event WHERE venue_id={$this->config['venue_id']} AND date <= NOW() AND end_date >= NOW() ORDER BY date DESC LIMIT 1"));
         if ($event[1] > 0) {
@@ -120,20 +151,16 @@ class authentication {
     }
     
     public function checkDevice() {
-        global $common, $db, $session;
-        $UUID = $common->getParam('UUID');
-        $exists = $db->dbResult($db->dbQuery("SELECT id FROM tbl_mobile_device WHERE UDID='$UUID'"));
-        if ($exists[1] > 0) {
-            // this exists \\
-            return array('id'=>$exists[0][0]['id'], 'status'=>'existing');
-        } else {
-            $ins = $db->dbQuery("INSERT INTO tbl_mobile_device (UDID) VALUES ('$UUID')", 'id');
-            if ($ins) {
-                return array('id'=>$ins, 'status'=>'new');
-            } else {
-                return array('status'=>'error');
-            }
-        }
+        return $this->device;
+    }
+    
+    public function addDevice($UUID) {
+        global $db;
+        return $db->dbQuery("INSERT INTO tbl_mobile_device (UDID) VALUES ('$UUID')", 'id');
+    }
+    public function addDeviceHook($deviceID, $venueID) {
+        global $db;
+        return $db->dbQuery("INSERT INTO tbl_device_venues (device_id, venue_id, type, last_visit) VALUES ($deviceID, $venueID, NOW())", 'id');
     }
     
     public function getDevice() {

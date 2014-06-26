@@ -18,13 +18,6 @@ class Api extends Model {
             if ($requests[1] > 0) {
                 foreach ($requests[0] as $i=>$request) {
                     $list[$request['id']] = $request;
-                    $list[$request['id'].'1'] = $request;
-                    $list[$request['id'].'2'] = $request;
-                    $list[$request['id'].'3'] = $request;
-                    $list[$request['id'].'4'] = $request;
-                    $list[$request['id'].'5'] = $request;
-                    $list[$request['id'].'6'] = $request;
-                    $list[$request['id'].'7'] = $request;
                 }
             }
         }
@@ -42,6 +35,50 @@ class Api extends Model {
             }
         }
         return $list;
+    }
+    public function getArtist($id=0) {
+        global $db;
+        if (is_int($id) && $id > 0) {
+            $artist = $db->dbResult($db->dbQuery("SELECT artist FROM tbl_artist WHERE id=$id"));
+            if ($artist[1] > 0) {
+                return $artist[0][0]['artist'];
+            }
+        }
+        return null;
+    }
+    public function getTitle($id=0) {
+        global $db;
+        if (is_int($id) && $id > 0) {
+            $title = $db->dbResult($db->dbQuery("SELECT title FROM tbl_title WHERE id=$id"));
+            if ($title[1] > 0) {
+                return $title[0][0]['title'];
+            }
+        }
+        return null;
+    }
+    public function getArtistByName($name='') {
+        global $db;
+        if (!empty($name)) {
+            $artist = $db->dbResult($db->dbQuery("SELECT id FROM tbl_artist WHERE artist='$name'"));
+            if ($artist[1] > 0) {
+                return $artist[0][0]['id'];
+            } else {
+                return $db->dbQuery("INSERT INTO tbl_artist (artist) VALUES ('$name')", 'id');
+            }
+        }
+        return null;
+    }
+    public function getTitleByName($name='') {
+        global $db;
+        if (!empty($name)) {
+            $title = $db->dbResult($db->dbQuery("SELECT id FROM tbl_title WHERE title='$name'"));
+            if ($title[1] > 0) {
+                return $title[0][0]['id'];
+            } else {
+                return $db->dbQuery("INSERT INTO tbl_title (title) VALUES ('$name')", 'id');
+            }
+        }
+        return null;
     }
 }
 ?>

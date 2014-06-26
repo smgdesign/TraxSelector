@@ -76,4 +76,20 @@ class Template {
         }
         return $output;
     }
+    public function listRequests($requests) {
+        $output = '';
+        if (count($requests) > 0) {
+            foreach ($requests as $id=>$request) {
+            $output .= '<tr id="'.$id.'">
+                <td>'.$request['artist'].'</td>
+                <td>'.$request['title'].'</td>
+                <td width="25">Up</td>
+                <td width="25">Down</td>
+            </tr>';
+            }
+        } else {
+            $output = '<tr><td colspan="4">No requests have been made</td></tr>';
+        }
+        return $output;
+    }
 }
