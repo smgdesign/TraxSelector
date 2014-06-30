@@ -34,9 +34,9 @@ class authentication {
         }
         
         if ($venue[1] > 0) {
-            $this->config['venue_id'] = $venue[0][0]['value'];
+            $this->config['venue_id'] = (int)$venue[0][0]['value'];
             if (isset($venue[0][0]['id'])) {
-                $this->device['id'] = $venue[0][0]['id'];
+                $this->device['id'] = (int)$venue[0][0]['id'];
                 $this->device['status'] = 'existing';
             } else if (!is_null($common->getParam('UUID'))) {
                 $this->device['id'] = $this->addDevice($common->getParam('UUID'));
@@ -54,7 +54,7 @@ class authentication {
         }
         $event = $db->dbResult($db->dbQuery("SELECT id, title, date, end_date FROM tbl_event WHERE venue_id={$this->config['venue_id']} AND date <= NOW() AND end_date >= NOW() ORDER BY date DESC LIMIT 1"));
         if ($event[1] > 0) {
-            $this->config['event_id'] = $event[0][0]['id'];
+            $this->config['event_id'] = (int)$event[0][0]['id'];
             $this->config['event_title'] = $event[0][0]['title'];
             $this->config['event_date'] = $event[0][0]['date'];
             $this->config['event_end_date'] = $event[0][0]['end_date'];
@@ -160,7 +160,7 @@ class authentication {
     }
     public function addDeviceHook($deviceID, $venueID) {
         global $db;
-        return $db->dbQuery("INSERT INTO tbl_device_venues (device_id, venue_id, type, last_visit) VALUES ($deviceID, $venueID, NOW())", 'id');
+        return $db->dbQuery("INSERT INTO tbl_device_venues (device_id, venue_id, type, last_visit) VALUES ($deviceID, $venueID, '{$this->device['type']}', NOW())", 'id');
     }
     
     public function getDevice() {

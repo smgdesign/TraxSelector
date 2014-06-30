@@ -37,13 +37,15 @@ class ApiController extends Controller {
                             'event_id'=>$auth->config['event_id'],
                             'event_title'=>$auth->config['event_title'],
                             'event_date'=>$auth->config['event_date'],
-                            'event_end_date'=>$auth->config['event_end_date']
+                            'event_end_date'=>$auth->config['event_end_date'],
+                            'user_id'=>$device['id'],
+                            'return'=>$device['status']
                         )
                     );
                     if ($device['status'] == 'new') {
-                        $this->json = array_merge($welcome, array('status'=> \errors\codes::$__SUCCESS, 'user_id'=>$device['id'], 'return'=>$device['status']));
+                        $this->json = array_merge($welcome, array('status'=> \errors\codes::$__SUCCESS));
                     } else {
-                        $this->json = array_merge($welcome, array('status'=>  \errors\codes::$__FOUND, 'user_id'=>$device['id'], 'return'=>$device['status']));
+                        $this->json = array_merge($welcome, array('status'=>  \errors\codes::$__FOUND));
                     }
                 } else {
                     $this->json = array('status'=>  \errors\codes::$__EMPTY, 'return'=>'no event');
@@ -80,6 +82,11 @@ class ApiController extends Controller {
             $this->json = array(
                 'html'=>$this->_template->listRequests($requests),
                 'status'=>  (count($requests) > 0) ? \errors\codes::$__FOUND : \errors\codes::$__EMPTY
+            );
+        } else {
+            $this->json = array(
+                'data'=>$this->Api->requests($auth->config['venue_id'], $auth->config['event_id']),
+                'status'=>(count($requests) > 0) ? \errors\codes::$__FOUND : \errors\codes::$__EMPTY
             );
         }
     }

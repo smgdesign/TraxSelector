@@ -78,7 +78,7 @@ class Template {
     }
     public function listRequests($requests) {
         $output = '';
-        if (count($requests) > 0) {
+        if (!is_null($requests) && count($requests) > 0) {
             foreach ($requests as $id=>$request) {
             $output .= '<tr id="'.$id.'">
                 <td>'.$request['artist'].'</td>
