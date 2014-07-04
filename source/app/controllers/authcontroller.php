@@ -19,7 +19,7 @@ class AuthController extends Controller {
         }
         if (!is_null($common->getParam('submitted'))) {
             //$common->isPage = false;
-            $loginScript = $auth->login($common->getParam('venue'), $common->getParam('password'));
+            $loginScript = $auth->login($common->getParam('venue'), $common->getParam('password'), '/admin');
             $this->set('errors', $loginScript);
         }
     }

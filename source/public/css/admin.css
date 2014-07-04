@@ -1,0 +1,243 @@
+/* 
+    Document   : admin
+    Created on : 30-Jun-2014, 23:49:34
+    Author     : richard
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+html, body {
+    background: url(/img/admin/bg-img.jpg) no-repeat;
+    background-size: cover;
+    font-family: 'Century Gothic', Verdana, sans-serif;
+    font-size: 100%;
+    color: white;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: default;
+}
+.logo {
+    font-weight: lighter;
+    position: absolute;
+    z-index: 1;
+    text-align: center;
+    font-size: 2rem;
+    width: 100%;
+}
+
+#login_box {
+    background: rgba(0, 0, 0, 0.5);
+    width: 40%;
+    margin: 10% 30%;
+    padding: 20px;
+    position: relative;
+}
+#login_box #venue_list, #login_box #password {
+    background: #000000;
+    border: 1px solid #999999;
+    color: #999999;
+    font-size: 1.3rem;
+    padding: 6px;
+    margin: 8px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.button {
+    background: #222222;
+    border: 1px solid #444444;
+    color: #ffffff;
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 1.3rem;
+}
+.comp_box {
+    list-style: none;
+    margin: 10px 0;
+    padding: 0;
+    background: #222222;
+    border: 1px solid #444444;
+    border-bottom: none;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+.comp_box li {
+    padding: 3px;
+    margin: 0;
+    border-bottom: 1px solid #444444;
+}
+.comp_box li:hover {
+    background: #444444;
+}
+.split_box {
+    margin-top: 100px;
+    float: left;
+    width: 50%;
+}
+.split_box h1 {
+    text-align: center;
+}
+.split_box ul.requests {
+    list-style: none;
+    margin: 0 12px;
+    padding: 0;
+}
+.split_box li.request, .split_box li.add {
+    display: table;
+    position: relative;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 1.4rem;
+    color: #9b9b9b;
+    vertical-align: middle;
+    height: 32px;
+    transition: 2000ms;
+    width: 90%;
+}
+.split_box li.add span.icon {
+    display: block;
+    float: left;
+    background: url(/img/admin/icon-sprite.png) no-repeat top left;
+    width: 32px;
+    height: 32px;
+}
+.split_box li.request span.text {
+    display: table-cell;
+    overflow: hidden;
+}
+.split_box li.add span.text {
+    display: block;
+    float: left;
+    height: 32px;
+    margin-left: 10px;
+    overflow: hidden;
+}
+.split_box .event, .split_box .nowplaying {
+    font-size: 1.5rem;
+    color: #9b9b9b;
+    cursor: pointer;
+}
+.split_box .event .icon_edit, .split_box .nowplaying .icon_edit {
+    background: url(/img/admin/icon-sprite.png) no-repeat -128px 0;
+    width: 31px;
+    height: 32px;
+    display: block;
+    float: left;
+    margin-top: 7px;
+    margin-right: 8px;
+}
+.split_box .event .text, .split_box .event .date, .split_box .nowplaying .text {
+    padding-bottom: 6px;
+}
+.split_box .event:hover .text, .split_box .event:hover .date, .split_box .nowplaying:hover .text {
+    border-bottom: 3px solid #9b9b9b;
+}
+.split_box .event .text input, .split_box .nowplaying .text input {
+    border: 1px solid #444444;
+    width: 75%;
+    height: 28px;
+    font-size: 1rem;
+    background: rgba(10, 10, 10, 0.7);
+    padding: 4px;
+    color: #ffffff;
+    margin: 5px;
+}
+.split_box .event .date input:first-child {
+    margin-left: 44px;
+}
+.split_box .event .date input {
+    border: 1px solid #444444;
+    width: 40%;
+    height: 28px;
+    font-size: 1rem;
+    background: rgba(10, 10, 10, 0.7);
+    padding: 4px;
+    color: #ffffff;
+    margin: 5px;
+}
+.icons {
+    float: right;
+    width: 132px;
+    display: table-cell;
+}
+.icons span {
+    background: url(/img/admin/icon-sprite.png) no-repeat;
+    width: 32px;
+    height: 32px;
+    display: block;
+    float: left;
+    margin: 0 6px;
+    -webkit-filter: blur(0px);
+    transition: 2000ms;
+}
+.icons span.inactive {
+    opacity: 0.1;
+}
+.icons .dedicate_icon {
+    background-position: -32px 0px;
+}
+.icons .comment_icon {
+    background-position: -64px 0px;
+}
+.icons .play_icon {
+    background-position: -96px 0px;
+}
+.icons span.active:hover {
+    -webkit-filter: blur(2px);
+    transition: 200ms;
+}
+li.request .dedicate, li.request .comment {
+    display: none;
+    position: absolute;
+    font-size: 1.2rem;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border: 1px solid #444444;
+    width: 50%;
+    max-height: 400%;
+    overflow-y: auto;
+    right: 0;
+    top: 32px;
+    z-index: 1;
+}
+li.add:hover {
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: 200ms;
+}
+.request .text input, .add_request input {
+    border: 1px solid #444444;
+    width: 35%;
+    height: 28px;
+    font-size: 1rem;
+    background: rgba(10, 10, 10, 0.7);
+    padding: 4px;
+    color: #ffffff;
+}
+.confirm, .icons .confirm {
+    display: block;
+    background: url(/img/admin/icon-sprite.png) no-repeat -160px 0px;
+    width: 32px;
+    height: 32px;
+    float: right;
+    margin: 0 6px;
+    transition: 2000ms;
+}
+.cancel, .icons .cancel {
+    display: block;
+    background: url(/img/admin/icon-sprite.png) no-repeat -192px 0px;
+    width: 32px;
+    height: 32px;
+    float: right;
+    margin: 0 6px;
+    transition: 2000ms;
+}
+.confirm:hover, .cancel:hover {
+    -webkit-filter: blur(2px);
+    transition: 200ms;
+}

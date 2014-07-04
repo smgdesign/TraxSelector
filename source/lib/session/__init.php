@@ -14,7 +14,7 @@ class session {
     protected $self = array();
     public function __construct($sessionName) {
         if (!debug) {
-            session_set_cookie_params(0, '/', 'hygiene-resource.com', true, true);
+            session_set_cookie_params(0, '/', 'homer.local', true, true);
         } else {
             session_set_cookie_params(0);
         }

@@ -75,7 +75,7 @@ class Controller {
     
     function __destruct() {
         if (!$this->system) {
-            global $auth, $common;
+            global $auth, $common, $session;
             $this->_template->{$this->_model}->_controller = $this;
             if ($this->level > $auth->level) {
                 $curURL = '|'.str_replace('/', '|', $common->getParam('url', 'get'));

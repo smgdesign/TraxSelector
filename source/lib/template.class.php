@@ -76,20 +76,74 @@ class Template {
         }
         return $output;
     }
-    public function listRequests($requests) {
+    public function listRequests($requests, $isAdmin=null, $json=false) {
+        global $common;
         $output = '';
+        $jsonResp = array();
         if (!is_null($requests) && count($requests) > 0) {
             foreach ($requests as $id=>$request) {
-            $output .= '<tr id="'.$id.'">
-                <td>'.$request['artist'].'</td>
-                <td>'.$request['title'].'</td>
-                <td width="25">Up</td>
-                <td width="25">Down</td>
-            </tr>';
+                // prepare the artist and title lengths here \\
+                $len = 40;
+                if (strlen($request['artist'].$request['title']) > $len) {
+                    $tgtLen = ($len - strlen($request['title']) < 5) ? 5 : $len - strlen($request['title']);
+                    if (strlen($request['artist']) > $tgtLen) {
+                        $request['artist'] = $common->shorten($request['artist'], $tgtLen, false);
+                    }
+
+                    $tgtLen = ($len - strlen($request['artist']) < 5) ? 5 : $len - strlen($request['artist']);
+                    if (strlen($request['title']) > $tgtLen) {
+                        $request['title'] = $common->shorten($request['title'], $tgtLen, false);
+                    }
+                }
+                if ($isAdmin) {
+                    $comments = array();
+                    $dedicate = array();
+                    if (isset($request['comments']) && !empty($request['comments'])) {
+                        foreach ($request['comments'] as $comment) {
+                            if (!empty($comment['comment'])) {
+                                $comments[] = $comment['comment'];
+                            }
+                            if (!empty($comment['dedicate'])) {
+                                $dedicate[] = $comment['dedicate'];
+                            }
+                        }
+                    }
+                    $request['dedicate'] = $dedicate;
+                    $request['comment'] = $comments;
+                    $tmpOutput = '<li class="request" id="request_'.$id.'">
+                        '.((!empty($dedicate)) ? '<span class="dedicate">'.implode('<br />', $dedicate).'</span>' : '').
+                        ((!empty($comments)) ? '<span class="comment">'.implode('<br />', $comments).'</span>' : '').
+                        '<span class="text">'.$request['artist'].' - '.$request['title'].'</span>
+                        <div class="icons">
+                        '.(($request['status'] == 1) ? '
+                            <span class="'.((empty($dedicate)) ? 'inactive' : 'active').' dedicate_icon"></span>
+                            <span class="'.((empty($comments)) ? 'inactive' : 'active').' comment_icon"></span>
+                            <span class="active play_icon"></span>' :
+                        '
+                            <span class="active cancel"></span>
+                            <span class="active confirm"></span>
+                        ').'
+                        </div>
+                    </li>';
+                } else {
+                    $tmpOutput = '<tr id="'.$id.'">
+                        <td>'.$request['artist'].'</td>
+                        <td>'.$request['title'].'</td>
+                        <td width="25">Up</td>
+                        <td width="25">Down</td>
+                    </tr>';
+                }
+                if (!$json) {
+                    $output .= $tmpOutput;
+                } else {
+                    $jsonResp[$id] = $request;
+                }
             }
-        } else {
-            $output = '<tr><td colspan="4">No requests have been made</td></tr>';
         }
-        return $output;
+        if (!$json) {
+            return $output;
+        } else {
+            return $jsonResp;
+        }
     }
 }

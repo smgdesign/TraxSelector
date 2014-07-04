@@ -32,7 +32,6 @@ class authentication {
                                                  LEFT JOIN tbl_device_venues AS v ON v.venue_id=c.value AND v.device_id=m.id AND v.type='mobile'
                                                  WHERE c.name='{$common->getMacAddr()}'"));
         }
-        
         if ($venue[1] > 0) {
             $this->config['venue_id'] = (int)$venue[0][0]['value'];
             if (isset($venue[0][0]['id'])) {
@@ -58,14 +57,16 @@ class authentication {
             $this->config['event_title'] = $event[0][0]['title'];
             $this->config['event_date'] = $event[0][0]['date'];
             $this->config['event_end_date'] = $event[0][0]['end_date'];
+        } else {
+            $this->config['event_id'] = null;
+        }
+        if ($session->getVar('level') > 0) {
             if (!is_null($session->getVar('id')) && $session->getVar('user_agent') == md5($common->getParam('HTTP_USER_AGENT', 'server'))) {
                 $cur = new DateTime();
                 $this->loggedIn = true;
                 $this->level = $session->getVar('level');
                 $session->addVar('last_action', $cur->getTimestamp());
             }
-        } else {
-            $this->config['event_id'] = null;
         }
     }
     public function setAPI($key='') {
@@ -77,17 +78,15 @@ class authentication {
             $nextURL = '/';
         }
         if (!empty($username) && !empty($pass)) {
-            $passSalt = $this->encrypt->generateSalt($username);
-            $passEnc = $this->encrypt->generateHash($passSalt, $pass);
-            $user = $db->dbResult($db->dbQuery("SELECT u.id, u.username, u.location_id, u.level, v.parent_id FROM tbl_users AS u
-                                                LEFT JOIN tbl_venue AS v ON v.id=u.location_id
-                                                WHERE u.username='$username' AND u.password='$passEnc'"));
+            $passEnc = md5($pass);
+            $user = $db->dbResult($db->dbQuery("SELECT v.id, v.location, v.title, v.image FROM tbl_venue AS v
+                                                WHERE v.title='$username' AND v.password='$passEnc'"));
             if ($user[1] > 0) {
                 $session->addVar('id', $user[0][0]['id']);
-                $session->addVar('username', $user[0][0]['username']);
-                $session->addVar('location_id', $user[0][0]['location_id']);
-                $session->addVar('venue_id', $user[0][0]['parent_id']);
-                $session->addVar('level', $user[0][0]['level']);
+                $session->addVar('location', $user[0][0]['location']);
+                $session->addVar('title', $user[0][0]['title']);
+                $session->addVar('image', $user[0][0]['image']);
+                $session->addVar('level', 1);
                 $cur = new DateTime();
                 $session->addVar('last_action', $cur->getTimestamp());
                 $session->addVar('user_agent', md5($common->getParam('HTTP_USER_AGENT', 'server')));
@@ -100,7 +99,7 @@ class authentication {
             $common->isPage = true;
             $err = array('fields'=>array());
             if (empty($username)) {
-                $err['fields'][] = 'Please enter a username.';
+                $err['fields'][] = 'Please enter a location.';
             }
             if (empty($pass)) {
                 $err['fields'][] = 'Please enter a password.';

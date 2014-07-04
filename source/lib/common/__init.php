@@ -218,18 +218,25 @@ class common {
      *       len: int
      * }
      */
-    public function shorten($string, $your_desired_width) {
-        $parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
-        $parts_count = count($parts);
+    public function shorten($string, $your_desired_width, $words = TRUE) {
+        if ($words) {
+            $parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
+            $parts_count = count($parts);
+            $length = 0;
+            $last_part = 0;
+            for (; $last_part < $parts_count; ++$last_part) {
+                $length += strlen($parts[$last_part]);
+                if ($length > $your_desired_width) { break; }
+            }
 
-        $length = 0;
-        $last_part = 0;
-        for (; $last_part < $parts_count; ++$last_part) {
-            $length += strlen($parts[$last_part]);
-            if ($length > $your_desired_width) { break; }
+            return implode(array_slice($parts, 0, $last_part));
+        } else {
+            if (strlen($string) > $your_desired_width) {
+                return substr($string, 0, $your_desired_width).'...';
+            } else {
+                return $string;
+            }
         }
-
-        return implode(array_slice($parts, 0, $last_part));
     }
 
     public function getAllParam($type='post') {

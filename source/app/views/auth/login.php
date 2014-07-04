@@ -26,11 +26,11 @@
             echo '</p>';
         }
         ?>
-        <input type="text" name="username" id="username" placeholder="Username" />
+        <input type="text" name="venue" id="venue_list" placeholder="Venue" class="auto_comp" autocomplete="off" />
         <br />
         <input type="password" name="password" id="password" placeholder="Password" />
         <br />
         <input type="hidden" name="submitted" value="TRUE" />
-        <input type="submit" name="login" value="Login" id="login_btn" />
+        <input type="submit" name="login" value="Login" class="button" />
     </form>
 </div>
