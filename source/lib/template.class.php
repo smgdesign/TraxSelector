@@ -129,8 +129,8 @@ class Template {
                     $tmpOutput = '<tr id="'.$id.'">
                         <td>'.$request['artist'].'</td>
                         <td>'.$request['title'].'</td>
-                        <td width="25">Up</td>
-                        <td width="25">Down</td>
+                        <td width="25" class="vote vote_up"><div class="icon"></div></td>
+                        <td width="25" class="vote vote_down"><div class="icon"></div></td>
                     </tr>';
                 }
                 if (!$json) {

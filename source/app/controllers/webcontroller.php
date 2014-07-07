@@ -22,8 +22,10 @@ class WebController extends Controller {
         if (isset($auth->config['venue_id']) && isset($auth->config['event_id'])) {
             $this->set('requests', $this->api->Api->requests($auth->config['venue_id'], $auth->config['event_id']));
             $this->set('links', $this->api->Api->getLinks($auth->config['venue_id']));
+            $this->set('event', $this->api->Api->getEventByDate(date('Y-m-d H:i')));
         } else {
             $this->set('requests', null);
+            $this->set('event', null);
         }
     }
     

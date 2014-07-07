@@ -50,18 +50,32 @@ body {
     position: absolute;
     z-index: 1;
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.6rem;
     width: 100%;
+    margin-top: 40px;
 }
-
+h1 {
+    font-size: 1.6rem;
+}
+h2 {
+    font-size: 1.3rem;
+}
+.requests_hidden {
+    transition: 200ms;
+    opacity: 0;
+}
+.requests_visible {
+    opacity: 1;
+    transition: 200ms;
+}
 #requests {
     width: 80%;
     height: 68%;
     position: absolute;
-    margin: 7% 10%;
-    overflow: scroll;
+    margin: 100px 10%;
+    overflow: auto;
+    z-index: 2;
 }
-
 .list {
     width: 100%;
     border-radius: 10px;
@@ -73,7 +87,23 @@ body {
 .list tr td {
     padding: 10px 10px;
 }
-
+.vote {
+    padding: 0 !important;
+    margin: 0;
+    cursor: pointer;
+}
+.vote .icon {
+    background-image: url('/img/admin/icon-sprite.png');
+    width: 32px;
+    height: 32px;
+    margin: 0 4px;
+}
+.vote_up .icon {
+    background-position: -160px 0;
+}
+.vote_down .icon {
+    background-position: -192px 0;
+}
 .glass_content {
     width: 80%;
     margin: 0 auto;
@@ -103,8 +133,9 @@ body {
 }
 
 #request_form .text {
-    width: 43%;
-    font-size: 1.3rem;
+    width: 40%;
+    font-family: 'Century Gothic', Verdana, sans-serif;
+    font-size: 0.9rem;
     padding: 8px;
     margin: 11px;
     vertical-align: top;
@@ -115,7 +146,7 @@ body {
     color: #ffffff;
     padding: 8px;
     margin: 8px;
-    font-size: 1.3rem;
+    font-size: 1rem;
 }
 
 .glass.down {
@@ -134,18 +165,22 @@ body {
 }
 
 .glass.up {
-    -webkit-transform: translateY(4rem);
-    -webkit-transform: translateY(4rem) translateZ(0);
-    transform: translateY(4rem);
-    transform: translateY(4rem) translateZ(0);
+    -webkit-transform: translateY(5rem);
+    -webkit-transform: translateY(5rem) translateZ(0);
+    transform: translateY(5rem);
+    transform: translateY(5rem) translateZ(0);
 }
 .glass.up::before {
-    -webkit-transform: translateY(-4rem);
-    -webkit-transform: translateY(-4rem) translateZ(0);
-    transform: translateY(-4rem);
-    transform: translateY(-4rem) translateZ(0);
+    -webkit-transform: translateY(-5rem);
+    -webkit-transform: translateY(-5rem) translateZ(0);
+    transform: translateY(-5rem);
+    transform: translateY(-5rem) translateZ(0);
 }
 .glass, .glass::before {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
     transition: -webkit-transform 0.5s ease-out;
     transition: transform 0.5s ease-out;
 }
@@ -155,6 +190,95 @@ body {
 }
 
 .large_text {text-align: center; font-size: 1.6rem;}
+
+#nowplaying {
+    position: absolute;
+    right: -24px;
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 1.3rem;
+    top: 59px;
+    -webkit-transform: rotate(25deg);
+    width: 49%;
+    text-align: center;
+    z-index: 1;
+}
+#event_info {
+    position: absolute;
+    left: -24px;
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 1.3rem;
+    top: 59px;
+    -webkit-transform: rotate(-25deg);
+    width: 49%;
+    text-align: center;
+    z-index: 1;
+}
+
+.keyboard {
+    margin: 0 auto;
+    width: 80%;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.keyboard .kb_row {
+    margin: 2px auto;
+    height: 47px;
+}
+.keyboard .kb_row .kb_letter {
+    background: rgba(0, 0, 0, 0.4);
+    width: 16px;
+    height: 16px;
+    padding: 12px;
+    margin: 2px;
+    border: 1px solid #999999;
+    float: left;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: pointer;
+}
+.keyboard .kb_row .kb_btn {
+    background: rgba(0, 0, 0, 0.4);
+    height: 16px;
+    padding: 12px;
+    margin: 2px;
+    border: 1px solid #999999;
+    float: left;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: pointer;
+}
+.keyboard .kb_row .kb_space {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #999999;
+    float: left;
+    width: 300px;
+    height: 40px;
+    margin: 2px;
+    cursor: pointer;
+}
+.keyboard .kb_row .kb_letter:hover, .keyboard .kb_row .kb_btn:hover, .keyboard .kb_row .kb_space:hover, .keyboard .kb_row .kb_active {
+    background: rgba(255, 255, 255, 0.6);
+}
+.comp_box {
+    background: rgba(0, 0, 0, 0.8);
+    list-style: none;
+    padding: 0;
+    margin: -11px 0 0 11px;
+    position: absolute;
+    width: 40%;
+}
+.comp_box li {
+    border: 1px solid #999999;
+    border-collapse: collapse;
+    padding: 5px;
+    margin: 0;
+    cursor: pointer;
+}
+.comp_box li:hover {
+    background: rgba (255, 255, 255, 0.8);
+}
 /* loader */
 
 .loader_centre {

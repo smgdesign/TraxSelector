@@ -56,7 +56,7 @@
         function loader(text) {
             return $('<div class="loader_centre"><p class="large_text">'+text+'</p><div id="movingBallG"><div class="movingBallLineG"></div><div id="movingBallG_1" class="movingBallG"></div></div>');
         }
-        var dataCache = {'array': [], 'object': {}};
+        var dataCache = {'array': [], 'object': {}, 'removed': {}};
         function autoRefresh() {
             $.ajax({
                 "url": "/api/request/getall/json",
@@ -71,7 +71,6 @@
                             if (typeof dataCache.object[z] === 'undefined' || !Object.equals(i.data[z], dataCache.object[z])) {
                                 change = true;
                                 dataCache.object[z] = i.data[z];
-                                
                             }
                             /*
                             if (
@@ -84,6 +83,14 @@
                                 dataCache[z] = i.data[z];
                             }*/
                         }
+                        for (var y in dataCache.object) {
+                            if (typeof i.data[y] === 'undefined') {
+                                // means its been removed \\
+                                change = true;
+                                dataCache.removed[y] = dataCache.object[y];
+                                delete(dataCache.object[y]);
+                            }
+                        }
                         if (typeof z === 'undefined') {
                             // means its empty \\
                             $(".requests").find('.request:not(.add_request)').empty().remove();
@@ -95,6 +102,9 @@
                             }
                             dataCache.array.sort(sortRequestsRating);
                             dataCache.array = dataCache.array.reverse();
+                            for (var j in dataCache.removed) {
+                                $("#request_"+j).empty().remove();
+                            }
                             for (var i=0; i<dataCache.array.length; i++) {
                                 if ($("#request_"+dataCache.array[i].id).length === 0) {
                                     $(".requests").append($('<li class="request" id="request_'+dataCache.array[i].id+'" />'));
@@ -191,7 +201,8 @@
                                     x++;
                                 }
                                 $("li", tgtResults).click(function() {
-                                    $this.val($(this).text());
+                                    var text = $(this).text();
+                                    $this.val(text);
                                     tgtResults.empty().remove();
                                 });
                             }
@@ -311,6 +322,14 @@
                                 "api_key": "9AdwAbXRB0D34ue4lN1G"
                             },
                             "success": function(i) {
+                                top.removeClass('editing');
+                                if (!top.hasClass('status')) {
+                                    // means we need to change to the comments stuff \\
+                                    top.find('.icons.editing').empty().remove();
+                                    top.find('.icons').show();
+                                    top.find('.artist').html(top.find('.artist input').val());
+                                    top.find('.title').html(top.find('.title input').val());
+                                }
                                 autoRefresh();
                             }
                         });

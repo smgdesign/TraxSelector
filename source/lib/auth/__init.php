@@ -50,6 +50,9 @@ class authentication {
                 // means something isn't right \\
                 die("You are trying to access using an unregistered static device");
             }
+        } else {
+            // means something isn't right \\
+            die("You are trying to access using an unregistered static device: {$common->getMacAddr()}");
         }
         $event = $db->dbResult($db->dbQuery("SELECT id, title, date, end_date FROM tbl_event WHERE venue_id={$this->config['venue_id']} AND date <= NOW() AND end_date >= NOW() ORDER BY date DESC LIMIT 1"));
         if ($event[1] > 0) {

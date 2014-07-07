@@ -124,7 +124,7 @@ class Api extends Model {
         global $db;
         if (!empty($date)) {
             $tmpDate = new DateTime($date);
-            $data = $db->dbResult($db->dbQuery("SELECT * FROM tbl_event WHERE (date <= '{$tmpDate->format('Y-m-d')}' AND end_date >= '{$tmpDate->format('Y-m-d')}') OR (date == '{$tmpDate->format('Y-m-d')}'"));
+            $data = $db->dbResult($db->dbQuery("SELECT * FROM tbl_event WHERE (date <= '{$tmpDate->format('Y-m-d H:i:00')}' AND end_date >= '{$tmpDate->format('Y-m-d H:i:00')}') OR (date = '{$tmpDate->format('Y-m-d H:i:00')}')"));
             if ($data[1] > 0) {
                 return $data[0][0];
             }

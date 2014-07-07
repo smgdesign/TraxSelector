@@ -52,7 +52,7 @@ class db {
         }
     }
 
-    public function dbResult($result, $type=MYSQL_ASSOC) {
+    public function dbResult($result, $type=MYSQLI_ASSOC) {
         $returnArray = array();
         $check = (mysqli_num_rows($result) > 0) ? true : false;
         $rowTotal = mysqli_num_rows($result);

@@ -224,7 +224,22 @@ class ApiController extends Controller {
     }
     
     public function request_rate() {
-        
+        global $common, $db;
+        if (!is_null($common->getParam('submitted'))) {
+            $id = $common->getParam('id');
+            $mode = $common->getParam('mode');
+            $val = ($mode === 'up') ? 1 : -1;
+            $db->dbQuery("UPDATE tbl_request SET rating=rating+$val WHERE id=$id");
+            $this->json = array(
+                'status'=>  \errors\codes::$__SUCCESS,
+                'return'=>'Successfully rated'
+            );
+        } else {
+            $this->json = array(
+                'status'=>  \errors\codes::$__ERROR,
+                'return'=>'Malformed form submission'
+            );
+        }
     }
     public function request_nowplaying() {
         global $auth, $db;
@@ -325,10 +340,10 @@ class ApiController extends Controller {
             $IDs = $db->dbResult($db->dbQuery("SELECT artist_id, title_id FROM tbl_request WHERE id={$common->getParam('id')}"));
             if ($IDs[1] > 0) {
                 if (!is_null($common->getParam('artist'))) {
-                    $db->dbQuery("UPDATE tbl_artist SET artist='{$common->getParam('artist')}' WHERE id={$IDs[0][0]['artist_id']}");
+                    $db->dbQuery("UPDATE tbl_artist SET artist='{$common->getParam('artist')}', status=1 WHERE id={$IDs[0][0]['artist_id']}");
                 }
                 if (!is_null($common->getParam('title'))) {
-                    $db->dbQuery("UPDATE tbl_title SET title='{$common->getParam('title')}' WHERE id={$IDs[0][0]['title_id']}");
+                    $db->dbQuery("UPDATE tbl_title SET title='{$common->getParam('title')}', status=1 WHERE id={$IDs[0][0]['title_id']}");
                 }
                 $this->json = array(
                     'status'=>  \errors\codes::$__SUCCESS,
@@ -390,6 +405,50 @@ class ApiController extends Controller {
                                                 "operand"=>"LIKE",
                                                 "col"=>"title",
                                                 "value"=>"'%{$common->getParam('qry')}%'"
+                                            )
+                                        )
+                                )
+                            ));
+                            break;
+                        case "artist":
+                            $tbl = array('a'=>'tbl_artist');
+                            $selItems = \data\collection::buildQuery("SELECT", $tbl, array(), array(
+                                "a"=>array("id", "artist AS title")
+                            ), array(
+                                "a"=>array(
+                                        array(
+                                            "join"=>"AND",
+                                            array(
+                                                "operand"=>"LIKE",
+                                                "col"=>"artist",
+                                                "value"=>"'%{$common->getParam('qry')}%'"
+                                            ),
+                                            array(
+                                                "operand"=>"=",
+                                                "col"=>"status",
+                                                "value"=>1
+                                            )
+                                        )
+                                )
+                            ));
+                            break;
+                        case "title":
+                            $tbl = array('t'=>'tbl_title');
+                            $selItems = \data\collection::buildQuery("SELECT", $tbl, array(), array(
+                                "t"=>array("id", "title")
+                            ), array(
+                                "t"=>array(
+                                        array(
+                                            "join"=>"AND",
+                                            array(
+                                                "operand"=>"LIKE",
+                                                "col"=>"title",
+                                                "value"=>"'%{$common->getParam('qry')}%'"
+                                            ),
+                                            array(
+                                                "operand"=>"=",
+                                                "col"=>"status",
+                                                "value"=>1
                                             )
                                         )
                                 )
