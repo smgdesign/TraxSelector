@@ -84,6 +84,7 @@ html, body {
     list-style: none;
     margin: 0 12px;
     padding: 0;
+    overflow-y: auto;
 }
 .split_box li.request, .split_box li.add {
     display: table;

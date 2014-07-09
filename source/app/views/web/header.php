@@ -82,8 +82,9 @@
                                 x++;
                             }
                             $("li", tgtResults).click(function() {
-                                $this.val($(this).text());
-                                tgtResults.empty().remove();
+                                var text = $(this).text();
+                                $this.val(text);
+                                //tgtResults.empty().remove();
                                 if ($this.next('input, textarea').length === 0 || $this.next('input:hidden').length > 0) {
                                     $this.siblings().filter('input:first').focus();
                                 } else {
@@ -127,12 +128,14 @@
                     overlay.className = 'glass down';
                     $("#requests").addClass('requests_visible').removeClass('requests_hidden');
                 }
+                $("#request_form form")[0].reset();
             });
             $("#request_form form input, #request_form form textarea").focus(function() {
                 hasFocus = $(this);
             });
             $("#request_form form").submit(function(ev) {
                 ev.preventDefault();
+                hasFocus.siblings().filter('input:first').focus();
                 var $this = $(this),
                     cont = true;
                 $(".error, .success", $this).empty().remove();
@@ -188,21 +191,28 @@
                     if (!$this.is(':focus')) {
                         $this.next('.comp_box').empty().remove();
                     }
-                }, 100);
+                }, 200);
             });
             setInterval(function() {
                 autoRefresh();
             }, 5000);
             $("#request_form_kb div.kb_row div").click(function() {
-                hasFocus.focus();
+                var caretPos = hasFocus[0].selectionStart,
+                    chars = hasFocus.val().split('');
                 if ($(this).hasClass('kb_letter')) {
                     // just use the text for it \\
                     var newVal = (shift) ? $(this).text() : $(this).text().toLowerCase();
-                    hasFocus.val(hasFocus.val()+newVal);
+                    chars.splice(caretPos, 0, newVal);
+                    hasFocus.val(chars.join(''));
+                    hasFocus[0].selectionStart = caretPos+1;
+                    hasFocus[0].selectionEnd = caretPos+1;
                 } else if ($(this).hasClass('kb_btn')) {
                     switch ($(this).attr('id')) {
                         case "kb_backspace":
-                            hasFocus.val(hasFocus.val().slice(0, -1));
+                            chars.splice(caretPos-1, 1);
+                            hasFocus.val(chars.join(''));
+                            hasFocus[0].selectionStart = caretPos-1;
+                            hasFocus[0].selectionEnd = caretPos-1;
                             break;
                         case "kb_shift":
                             if (shift) {

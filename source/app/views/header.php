@@ -180,7 +180,8 @@
             }
         }
         $(document).ready(function() {
-            
+            var hght = $(window).height();
+            $(".requests").height(hght-200);
             $(".auto_comp").keyup(function() {
                 if ($(this).val().length > 2) {
                     var tgt = $(this).prop('id').split('_list')[0],
@@ -216,7 +217,7 @@
                 var $this = $(this);
                 setTimeout(function() {
                     $this.next('.comp_box').empty().remove();
-                }, 100);
+                }, 200);
             });
             $(".requests").on('click', ".request .dedicate_icon, .request .comment_icon", function() {
                 $(".request .dedicate, .request .comment").fadeOut();

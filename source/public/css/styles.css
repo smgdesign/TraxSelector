@@ -63,6 +63,7 @@ h2 {
 .requests_hidden {
     transition: 200ms;
     opacity: 0;
+    display: none;
 }
 .requests_visible {
     opacity: 1;
@@ -103,6 +104,7 @@ h2 {
 }
 .vote_down .icon {
     background-position: -192px 0;
+    margin-right: 20px;
 }
 .glass_content {
     width: 80%;

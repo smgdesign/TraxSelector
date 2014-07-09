@@ -4,19 +4,6 @@
 <?php
 if (!is_null($requests)) {
     foreach ($requests as $request) {
-        // prepare the artist and title lengths here \\
-        $len = 40;
-        if (strlen($request['artist'].$request['title']) > $len) {
-            $tgtLen = ($len - strlen($request['title']) < 5) ? 5 : $len - strlen($request['title']);
-            if (strlen($request['artist']) > $tgtLen) {
-                $request['artist'] = $common->shorten($request['artist'], $tgtLen, false);
-            }
-            
-            $tgtLen = ($len - strlen($request['artist']) < 5) ? 5 : $len - strlen($request['artist']);
-            if (strlen($request['title']) > $tgtLen) {
-                $request['title'] = $common->shorten($request['title'], $tgtLen, false);
-            }
-        }
         $comments = array();
         $dedicate = array();
         if (isset($request['comments']) && !empty($request['comments'])) {
