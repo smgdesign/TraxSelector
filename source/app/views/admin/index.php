@@ -17,7 +17,7 @@ if (!is_null($requests)) {
             }
         }
         ?>
-    <li class="request" id="request_<?php echo $request['id']; ?>">
+    <li class="request <?php echo ($request['status'] === 0) ? 'pending' : ''; ?>" id="request_<?php echo $request['id']; ?>">
         <?php echo ((!empty($dedicate)) ? '<span class="dedicate">'.implode('<br />', $dedicate).'</span>' : '').
                    ((!empty($comments)) ? '<span class="comment">'.implode('<br />', $comments).'</span>' : ''); ?>
                    <span class="text">
@@ -26,7 +26,7 @@ if (!is_null($requests)) {
                    </span>
                    <div class="icons">
                        <?php
-                       if ($request['status'] == 1) {
+                       if ($request['status'] === 1) {
                        ?>
                        <span class="<?php echo (empty($dedicate)) ? 'inactive' : 'active'; ?> dedicate_icon"></span>
                        <span class="<?php echo (empty($comments)) ? 'inactive' : 'active'; ?> comment_icon"></span>
@@ -69,7 +69,13 @@ if (!is_null($requests)) {
     <?php
     if (!is_null($nowplaying)) {
         ?>
-        <div class="nowplaying" id="nowplaying_<?php echo $nowplaying['id']; ?>"><span class="icon_edit"></span><span class="text"><?php echo $nowplaying['artist'].' - '.$nowplaying['title']; ?></span></div>
+        <div class="nowplaying" id="nowplaying_<?php echo $nowplaying['id']; ?>">
+            <span class="icon_edit"></span><span class="text"><?php echo $nowplaying['artist'].' - '.$nowplaying['title']; ?></span>
+            <div class="dedicate">
+                <span class="dedicate_msg"><?php echo implode('<br />', $nowplaying['dedicate']); ?></span><br />
+                <span class="comment_msg"><?php echo implode('<br />', $nowplaying['comment']); ?></span>
+            </div>
+        </div>
         <?php
     } else {
         ?>

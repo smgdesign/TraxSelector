@@ -9,7 +9,7 @@ class Api extends Model {
         if ($venueID != 0 && $eventID != 0) {
             $order = "";
             if ($ordering) {
-                $order = "ORDER BY r.rating DESC";
+                $order = "ORDER BY r.status ASC, r.rating DESC";
             }
             $cols = "";
             $join = "";
@@ -27,6 +27,7 @@ class Api extends Model {
                                                     WHERE r.venue_id=$venueID AND r.event_id=$eventID$cond $order"));
             if ($requests[1] > 0) {
                 foreach ($requests[0] as $i=>$request) {
+                    $request['status'] = (int)$request['status'];
                     if (!isset($list[$request['id']])) {
                         $list[$request['id']] = $request;
                         if ($full) {
@@ -43,13 +44,28 @@ class Api extends Model {
     }
     public function nowPlaying($venueID=0, $eventID=0) {
         global $db;
-        $data = $db->dbResult($db->dbQuery("SELECT n.id, a.artist, t.title FROM tbl_now_playing AS n
+        $data = $db->dbResult($db->dbQuery("SELECT n.id, a.artist, t.title, c.dedicate, c.comment FROM tbl_now_playing AS n
                                             LEFT JOIN tbl_request AS r ON r.id=n.request_id
                                             LEFT JOIN tbl_artist AS a ON a.id=r.artist_id
                                             LEFT JOIN tbl_title AS t ON t.id=r.title_id
-                                            WHERE n.venue_id=$venueID AND n.event_id=$eventID ORDER BY n.date_played DESC LIMIT 1"));
+                                            LEFT JOIN tbl_comments AS c ON c.request_id=r.id
+                                            WHERE n.venue_id=$venueID AND n.event_id=$eventID ORDER BY n.date_played DESC"));
         if ($data[1] > 0) {
-            return $data[0][0];
+            $nowPlaying = array();
+            foreach ($data[0] as $i=>$comment) {
+                if ($i == 0) {
+                    $nowPlaying = $comment;
+                    $nowPlaying['dedicate'] = array();
+                    $nowPlaying['comment'] = array();
+                }
+                if (!empty($comment['dedicate'])) {
+                    $nowPlaying['dedicate'][] = $comment['dedicate'];
+                }
+                if (!empty($comment['comment'])) {
+                    $nowPlaying['comment'][] = $comment['comment'];
+                }
+            }
+            return $nowPlaying;
         }
         return null;
     }

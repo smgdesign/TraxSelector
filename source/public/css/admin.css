@@ -99,6 +99,9 @@ html, body {
     transition: 2000ms;
     width: 90%;
 }
+li.request.pending {
+    background: rgba(120, 20, 20, 0.6);
+}
 .split_box li.add span.icon {
     display: block;
     float: left;
@@ -146,6 +149,11 @@ html, body {
     padding: 4px;
     color: #ffffff;
     margin: 5px;
+}
+.split_box .nowplaying .dedicate {
+    clear: both;
+    margin-left: 38px;
+    font-size: 1.4rem;
 }
 .split_box .event .date input:first-child {
     margin-left: 44px;

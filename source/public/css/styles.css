@@ -228,6 +228,9 @@ h2 {
     margin: 2px auto;
     height: 47px;
 }
+.keyboard .kb_hidden {
+    display: none;
+}
 .keyboard .kb_row .kb_letter {
     background: rgba(0, 0, 0, 0.4);
     width: 16px;

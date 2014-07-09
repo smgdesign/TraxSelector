@@ -63,10 +63,26 @@
                 <div class="kb_letter">,</div>
                 <div class="kb_letter">.</div>
             </div>
-            <div class="kb_row" style="margin-left: 36px;">
+            <div class="kb_row" style="margin-left: 8px;">
+                <div class="kb_btn" id="kb_num">123</div>
                 <div class="kb_btn" id="kb_prev">PREV</div>
                 <div class="kb_space"></div>
                 <div class="kb_btn" id="kb_next">NEXT</div>
+            </div>
+            <div class="kb_row kb_hidden" id="kb_numbers">
+                <div class="kb_letter">0</div>
+                <div class="kb_letter">1</div>
+                <div class="kb_letter">2</div>
+                <div class="kb_letter">3</div>
+                <div class="kb_letter">4</div>
+                <div class="kb_letter">5</div>
+                <div class="kb_letter">6</div>
+                <div class="kb_letter">7</div>
+                <div class="kb_letter">8</div>
+                <div class="kb_letter">9</div>
+            </div>
+            <div class="kb_row kb_hidden" id="kb_letters">
+                <div class="kb_btn" id="kb_let">ABC</div>
             </div>
         </div>
     </div>

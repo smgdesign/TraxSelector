@@ -56,7 +56,12 @@
         function loader(text) {
             return $('<div class="loader_centre"><p class="large_text">'+text+'</p><div id="movingBallG"><div class="movingBallLineG"></div><div id="movingBallG_1" class="movingBallG"></div></div>');
         }
-        var dataCache = {'array': [], 'object': {}, 'removed': {}};
+        var dataCache = {
+            'array': [],
+            'object': {},
+            'pending': {},
+            'removed': {}
+        };
         function autoRefresh() {
             $.ajax({
                 "url": "/api/request/getall/json",
@@ -66,11 +71,16 @@
                 "success": function(i) {
                     if (i.status.code === 3 || i.status.code === 2) {
                         dataCache.array = [];
+                        dataCache.pending = {};
                         var change = false;
                         for (var z in i.data) {
-                            if (typeof dataCache.object[z] === 'undefined' || !Object.equals(i.data[z], dataCache.object[z])) {
+                            if (typeof dataCache.object[z] === 'undefined' || !Object.equals(i.data[z], dataCache.object[z]) || dataCache.object[z].status !== i.data[z].status || i.data[z] === 0) {
                                 change = true;
-                                dataCache.object[z] = i.data[z];
+                                if (i.data[z].status === 1) {
+                                    dataCache.object[z] = i.data[z];
+                                } else {
+                                    dataCache.pending[z] = i.data[z];
+                                }
                             }
                             /*
                             if (
@@ -101,6 +111,9 @@
                                 }
                             }
                             dataCache.array.sort(sortRequestsRating);
+                            for (var x in dataCache.pending) {
+                                dataCache.array.unshift(dataCache.pending[x]);
+                            }
                             dataCache.array = dataCache.array.reverse();
                             for (var j in dataCache.removed) {
                                 $("#request_"+j).empty().remove();
@@ -108,6 +121,11 @@
                             for (var i=0; i<dataCache.array.length; i++) {
                                 if ($("#request_"+dataCache.array[i].id).length === 0) {
                                     $(".requests").append($('<li class="request" id="request_'+dataCache.array[i].id+'" />'));
+                                }
+                                if (dataCache.array[i].status === 0) {
+                                    $("#request_"+dataCache.array[i].id).addClass('pending');
+                                } else {
+                                    $("#request_"+dataCache.array[i].id).removeClass('pending');
                                 }
                                 $("#request_"+dataCache.array[i].id).html(
                                         (
@@ -126,7 +144,8 @@
                                                 '<span class="comment">'+dataCache.array[i].comment.join('<br />')+'</span>' :
                                                 ''
                                          )+
-                                         '<span class="text"><span class="artist">'+dataCache.array[i].artist+'</span> - <span class="title">'+dataCache.array[i].title+'</span></span><div class="icons">'+((dataCache.array[i].status == 1) ? '<span class="'+
+                                         '<span class="text"><span class="artist">'+dataCache.array[i].artist+'</span> - <span class="title">'+dataCache.array[i].title+'</span></span><div class="icons">'+
+                                         ((dataCache.array[i].status === 1) ? '<span class="'+
                                          (
                                             (
                                                 dataCache.array[i].dedicate === null ||
@@ -171,12 +190,19 @@
             });
         }
         function sortRequestsRating(a,b) {
-            if (a.rating < b.rating) {
+            if (a.rating < b.rating && a.status !== 0) {
                 return 1;
-            } else if (a.rating > b.rating) {
+            } else if (a.rating > b.rating && b.status !== 0) {
                 return -1;
             } else {
                 return 0;
+            }
+        }
+        function pendingFirst(el, ind, tmpArr) {
+            //console.log(ind);
+            if (el.status === 0) {
+                tmpArr.splice(ind);
+                tmpArr.push(el);
             }
         }
         $(document).ready(function() {

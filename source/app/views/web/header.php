@@ -101,7 +101,8 @@
         }
         $(document).ready(function() {
             var hasFocus = $("#artist_list"),
-                shift = false;
+                shift = false,
+                isNum = false;
             $("body").append('<div id="modal_vote"><p><span class="ui-icon ui-icon-check" style="float:left;"></span><span class="message"></span></p></div>');
             $("#modal_vote").dialog({
                 "autoOpen": false,
@@ -206,6 +207,10 @@
                     hasFocus.val(chars.join(''));
                     hasFocus[0].selectionStart = caretPos+1;
                     hasFocus[0].selectionEnd = caretPos+1;
+                    if (shift) {
+                        shift = false;
+                        $(this).removeClass('kb_active');
+                    }
                 } else if ($(this).hasClass('kb_btn')) {
                     switch ($(this).attr('id')) {
                         case "kb_backspace":
@@ -236,6 +241,25 @@
                             } else {
                                 hasFocus.prev('input, textarea').focus();
                             }
+                            break;
+                        case "kb_num":
+                            if (!isNum) {
+                                isNum = true;
+                                $("#request_form_kb div.kb_row").hide();
+                                $("#kb_numbers").show();
+                                $("#kb_letters").show();
+                            } else {
+                                isNum = false;
+                                $("#request_form_kb div.kb_row").show();
+                                $("#kb_numbers").hide();
+                                $("#kb_letters").hide();
+                            }
+                            break;
+                        case "kb_let":
+                            isNum = false;
+                            $("#request_form_kb div.kb_row").show();
+                            $("#kb_numbers").hide();
+                            $("#kb_letters").hide();
                             break;
                     }
                 } else if ($(this).hasClass('kb_space')) {

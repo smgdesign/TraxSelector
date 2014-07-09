@@ -48,7 +48,7 @@ class authentication {
                 $this->addDeviceHook($this->device['id'], $this->config['venue_id']);
             } else {
                 // means something isn't right \\
-                die("You are trying to access using an unregistered static device");
+                die("You are trying to access using an unregistered static device: $ip");
             }
         } else {
             // means something isn't right \\
