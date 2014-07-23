@@ -27,13 +27,17 @@ class authentication {
                                                  WHERE c.name='{$common->getMacAddr()}'"));
         } else {
             // this is a mobile device \\
-            $venue = $db->dbResult($db->dbQuery("SELECT c.value, m.id, v.type FROM tbl_config AS c
+            $venue = $db->dbResult($db->dbQuery("SELECT c.value, m.id, v.type, ven.location, ven.title, ven.image FROM tbl_config AS c
                                                  LEFT JOIN tbl_mobile_device AS m ON m.UDID='{$common->getParam('UUID')}'
                                                  LEFT JOIN tbl_device_venues AS v ON v.venue_id=c.value AND v.device_id=m.id AND v.type='mobile'
+                                                 LEFT JOIN tbl_venue AS ven ON ven.id=v.venue_id
                                                  WHERE c.name='{$common->getMacAddr()}'"));
         }
         if ($venue[1] > 0) {
             $this->config['venue_id'] = (int)$venue[0][0]['value'];
+            $this->config['venue_location'] = $venue[0][0]['location'];
+            $this->config['venue_title'] = $venue[0][0]['title'];
+            $this->config['venue_image'] = $venue[0][0]['image'];
             if (isset($venue[0][0]['id'])) {
                 $this->device['id'] = (int)$venue[0][0]['id'];
                 $this->device['status'] = 'existing';
