@@ -8,8 +8,44 @@
     venue/init //sets up user, returns userId
     request/rate //posts a rating for a given request_id
     request/submit // posts a request
+    photo/submit // submit an image
+    photo/get // return a specified image
+ 
+    xhr/builder // process an array of requested items
  */
 class ApiController extends Controller {
+    var $internal = false;
+    public function xhr($request='builder') {
+        if (!empty($request)) {
+            $method = 'xhr_'.$request;
+            if (method_exists($this, $method)) {
+                $params = func_get_args();
+                $this->internal = true;
+                call_user_func_array(array(&$this, $method), array_slice($params, 1));
+            } else {
+                $this->json = array('status'=>  \errors\codes::$__ERROR, 'return'=>'Unknown method');
+            }
+        }
+    }
+    public function xhr_builder() {
+        global $common;
+        if ($common->getParam('submitted')) {
+            $items = $common->getParam('items');
+            $ret = array();
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    $method = str_replace('/', '_', $item);
+                    if (method_exists($this, $method)) {
+                        $params = func_get_args();
+                        $ret[$item] = call_user_func_array(array(&$this, $method), array_slice($params, 1));
+                    } else {
+                        $ret[$item] = array('status'=>  \errors\codes::$__ERROR, 'return'=>'Unknown method');
+                    }
+                }
+            }
+            $this->json = $ret;
+        }
+    }
     public function venue($request='init') {
         if (!empty($request)) {
             $method = 'venue_'.$request;
@@ -46,17 +82,32 @@ class ApiController extends Controller {
                         )
                     );
                     if ($device['status'] == 'new') {
+                        if ($this->internal) {
+                            return array_merge($welcome, array('status'=> \errors\codes::$__SUCCESS));
+                        }
                         $this->json = array_merge($welcome, array('status'=> \errors\codes::$__SUCCESS));
                     } else {
+                        if ($this->internal) {
+                            return array_merge($welcome, array('status'=>  \errors\codes::$__FOUND));
+                        }
                         $this->json = array_merge($welcome, array('status'=>  \errors\codes::$__FOUND));
                     }
                 } else {
+                    if ($this->internal) {
+                        return array('status'=>  \errors\codes::$__EMPTY, 'return'=>'no event');
+                    }
                     $this->json = array('status'=>  \errors\codes::$__EMPTY, 'return'=>'no event');
                 }
             } else {
+                if ($this->internal) {
+                    return array('status'=>  \errors\codes::$__FOUND, 'return'=>$device['status']);
+                }
                 $this->json = array('status'=>  \errors\codes::$__FOUND, 'return'=>$device['status']);
             }
         } else {
+            if ($this->internal) {
+                return array('status'=>  \errors\codes::$__ERROR, 'return'=>'Not allowed');
+            }
             $this->json = array('status'=>  \errors\codes::$__ERROR, 'return'=>'Not allowed');
         }
     }
@@ -75,14 +126,26 @@ class ApiController extends Controller {
                         break;
                 }
                 if (!is_null($data)) {
+                    if ($this->internal) {
+                        return array('status'=>  \errors\codes::$__FOUND, 'data'=>$data);
+                    }
                     $this->json = array('status'=>  \errors\codes::$__FOUND, 'data'=>$data);
                 } else {
+                    if ($this->internal) {
+                        return array('status'=>  \errors\codes::$__FOUND, 'data'=>$data);
+                    }
                     $this->json = array('status'=>  \errors\codes::$__EMPTY, 'return'=>'No events');
                 }
             } else {
+                if ($this->internal) {
+                    return array('status'=>  \errors\codes::$__FOUND, 'return'=>$device['status']);
+                }
                 $this->json = array('status'=>  \errors\codes::$__FOUND, 'return'=>$device['status']);
             }
         } else {
+            if ($this->internal) {
+                return array('status'=>  \errors\codes::$__ERROR, 'return'=>'Not allowed');
+            }
             $this->json = array('status'=>  \errors\codes::$__ERROR, 'return'=>'Not allowed');
         }
     }
@@ -157,6 +220,14 @@ class ApiController extends Controller {
                     // insert a row for the dedication / message \\
                     $db->dbQuery("INSERT INTO tbl_comments (request_id, dedicate, comment) VALUES ($id, '$dedicate', '$message')");
                 }
+                if ($this->internal) {
+                    return array(
+                        'status'=>  \errors\codes::$__SUCCESS,
+                        'data'=>array(
+                            'id'=>$id
+                        )
+                    );
+                }
                 $this->json = array(
                     'status'=>  \errors\codes::$__SUCCESS,
                     'data'=>array(
@@ -164,12 +235,24 @@ class ApiController extends Controller {
                     )
                 );
             } else {
+                if ($this->internal) {
+                    return array(
+                        'status'=>  \errors\codes::$__ERROR,
+                        'return'=>'Artist and Title are required'
+                    );
+                }
                 $this->json = array(
                     'status'=>  \errors\codes::$__ERROR,
                     'return'=>'Artist and Title are required'
                 );
             }
         } else {
+            if ($this->internal) {
+                return array(
+                    'status'=>  \errors\codes::$__ERROR,
+                    'return'=>'Malformed form submission'
+                );
+            }
             $this->json = array(
                 'status'=>  \errors\codes::$__ERROR,
                 'return'=>'Malformed form submission'
@@ -468,5 +551,84 @@ class ApiController extends Controller {
             }
         }
     }
-    
+    public function photo($request='submit') {
+        global $auth;
+        if ($this->checkContinue()) {
+            $device = $auth->checkDevice();
+            if (is_array($device) && $device['status'] == 'existing') {
+                if (!empty($request)) {
+                    $method = 'photo_'.$request;
+                    if (method_exists($this, $method)) {
+                        $params = func_get_args();
+                        call_user_func_array(array(&$this, $method), array_slice($params, 1));
+                    }
+                }
+            }
+        }
+    }
+    public function photo_submit() {
+        global $auth, $common, $db;
+        if (!is_null($common->getParam('submitted'))) {
+            $image = $common->getParam('image', 'file');
+            if (!empty($image)) {
+                require_once ROOT . DS . 'lib' . DS . 'files' . DS . '__init.php';
+                //$image = str_replace('data:image/png;base64,', '', $image);
+                //$image = str_replace(' ', '+', $image);
+                //$img = base64_decode($image);
+                $files = new files();
+                if ($files->createImageResource($image['name'], $image['tmp_name'])) {
+                    $files->resizeImage(390, 390, 'crop');
+                    $device = $auth->checkDevice();
+                    $fileURL = time().'-'.$device['id'].'-'.uniqid().'-'.$image['name'];
+                    if ($files->saveImage(uploadDir.'thumb/'.$fileURL, 70)) {
+                        $files->resizeImage($files->width, $files->height);
+                        if ($files->saveImage(uploadDir.$fileURL, 70)) {
+                            $db->dbQuery("INSERT INTO tbl_photo (url, venue_id, event_id) VALUES ('$fileURL', {$auth->config['venue_id']}, {$auth->config['event_id']})");
+                            $this->json = array(
+                                'status'=>  \errors\codes::$__SUCCESS,
+                                'return'=>'Image successfully added'
+                            );
+                        } else {
+                            $this->json = array(
+                                'status'=>  \errors\codes::$__ERROR,
+                                'return'=>'Full image could not be saved'
+                            );
+                        }
+                    } else {
+                        $this->json = array(
+                            'status'=>  \errors\codes::$__ERROR,
+                            'return'=>'Thumb could not be saved'
+                        );
+                    }
+                } else {
+                    $this->json = array(
+                        'status'=>  \errors\codes::$__ERROR,
+                        'return'=>'Image uploaded is in an invalid format'
+                    );
+                }
+            } else {
+                $this->json = array(
+                    'status'=>  \errors\codes::$__ERROR,
+                    'return'=>'No image was provided'
+                );
+            }
+        } else {
+            $this->json = array(
+                'status'=>  \errors\codes::$__ERROR,
+                'return'=>'Malformed form submission'
+            );
+        }
+    }
+    public function photo_get() {
+        global $auth;
+        $photos = $this->Api->getPhotos($auth->config['venue_id'], $auth->config['event_id']);
+        $this->json = array(
+            'status'=> (count($photos) > 0) ? \errors\codes::$__SUCCESS : \errors\codes::$__EMPTY,
+            'data'=>$photos
+        );
+    }
+    public function photo_display($url, $mode='full') {
+        $this->isJSON = false;
+        $this->Api->getPhoto($url, $mode);
+    }
 }

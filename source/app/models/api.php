@@ -11,13 +11,10 @@ class Api extends Model {
             if ($ordering) {
                 $order = "ORDER BY r.status ASC, r.rating DESC";
             }
-            $cols = "";
-            $join = "";
+            $cols = ", c.id AS comment_id, c.dedicate, c.comment";
+            $join = "LEFT JOIN tbl_comments AS c ON c.request_id=r.id";
             $cond = " AND r.status < 2";
-            if ($full) {
-                $cols = ", c.id AS comment_id, c.dedicate, c.comment";
-                $join = "LEFT JOIN tbl_comments AS c ON c.request_id=r.id";
-            } else {
+            if (!$full) {
                 $cond = " AND r.status=1";
             }
             $requests = $db->dbResult($db->dbQuery("SELECT r.*, a.artist, t.title $cols FROM tbl_request AS r
@@ -146,6 +143,41 @@ class Api extends Model {
             }
         }
         return null;
+    }
+    public function getPhotos($venueID=0, $eventID=0) {
+        global $db;
+        if ($venueID != 0 && $eventID != 0) {
+            $photos = $db->dbResult($db->dbQuery("SELECT url, date_added FROM tbl_photo WHERE venue_id=$venueID AND event_id=$eventID"));
+            if ($photos[1] > 0) {
+                foreach ($photos[0] as &$photo) {
+                    $photo['url'] = '/api/photo/display/'.$photo['url'];
+                }
+                return $photos[0];
+            }
+        }
+        return array();
+    }
+    public function getPhoto($url, $mode) {
+        if ($mode == 'thumb') {
+            $url = $mode.'/'.$url;
+        }
+        if (file_exists(uploadDir.$url)) {
+            $ext = pathinfo(uploadDir.$url);
+            $img = file_get_contents(uploadDir.$url);
+            switch (strtolower($ext['extension'])) {
+                case "jpg":
+                case "jpeg":
+                    header ("Content-Type: image/jpeg");
+                    break;
+                case "gif":
+                    header ("Content-Type: image/gif");
+                    break;
+                case "png":
+                    header ("Content-Type: image/png");
+                    break;
+            }
+            echo $img;
+        }
     }
 }
 ?>

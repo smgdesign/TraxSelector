@@ -17,36 +17,44 @@ class files {
         return false;
     }
     
-    public function createImageResource($name='', $tmpName='') {
-        $ext = pathinfo($name);
-        // get the dimensions \\
-        list($this->width, $this->height) = getimagesize($tmpName);
-        switch(strtolower($ext['extension'])) {
-            case 'jpg': 
-            case 'jpeg':
-                if (imagetypes() & IMG_JPG) {
-                    $this->img = imagecreatefromjpeg($tmpName);
-                    return true;
-                }
-                break;
+    public function createImageResource($name='', $tmpName='', $file=true) {
+        if ($file) {
+            $ext = pathinfo($name);
+            // get the dimensions \\
+            list($this->width, $this->height) = getimagesize($tmpName);
+            switch(strtolower($ext['extension'])) {
+                case 'jpg': 
+                case 'jpeg':
+                    if (imagetypes() & IMG_JPG) {
+                        $this->img = imagecreatefromjpeg($tmpName);
+                        return true;
+                    }
+                    break;
 
-            case 'gif':
-                if (imagetypes() & IMG_GIF) {
-                    $this->img = imagecreatefromgif($tmpName);
-                    return true;
-                }
-                break;
+                case 'gif':
+                    if (imagetypes() & IMG_GIF) {
+                        $this->img = imagecreatefromgif($tmpName);
+                        return true;
+                    }
+                    break;
 
-            case 'png':
-                if (imagetypes() & IMG_PNG) {
-                    $this->img = imagecreatefrompng($tmpName);
-                    return true;
-                }
-                break;
-
-            default:
-                // *** No extension - No save.
-                break;
+                case 'png':
+                    if (imagetypes() & IMG_PNG) {
+                        $this->img = imagecreatefrompng($tmpName);
+                        return true;
+                    }
+                    break;
+                default:
+                    // *** No extension - No save.
+                    break;
+            }
+        } else {
+            // this is a text based image \\
+            $data = $name;
+            if (!empty($data)) {
+                $this->img = imagecreatefromstring($data);
+                return true;
+            }
         }
         return false;
     }
@@ -179,17 +187,22 @@ class files {
     public function saveImage($savePath, $imageQuality="100") {  
         // *** Get extension  
         $ext = pathinfo($savePath);  
+        $success = false;
         switch(strtolower($ext['extension'])) {  
             case 'jpg':  
             case 'jpeg':  
-                if (imagetypes() & IMG_JPG) {  
-                    imagejpeg($this->imageResized, $savePath, $imageQuality);  
+                if (imagetypes() & IMG_JPG) {
+                    if (imagejpeg($this->imageResized, $savePath, $imageQuality) !== false) {
+                        $success = true;
+                    }
                 }  
                 break;  
 
             case 'gif':  
                 if (imagetypes() & IMG_GIF) {  
-                    imagegif($this->imageResized, $savePath);  
+                    if (imagegif($this->imageResized, $savePath) !== false) {
+                        $success = true;
+                    }
                 }  
                 break;  
 
@@ -201,7 +214,9 @@ class files {
                 $invertScaleQuality = 9 - $scaleQuality;  
 
                 if (imagetypes() & IMG_PNG) {  
-                    imagepng($this->imageResized, $savePath, $invertScaleQuality);  
+                    if (imagepng($this->imageResized, $savePath, $invertScaleQuality) !== false) {
+                        $success = true;
+                    }
                 }
                 break;  
 
@@ -209,8 +224,8 @@ class files {
                 // *** No extension - No save.  
                 break;  
         }  
-
-        imagedestroy($this->imageResized);  
+        imagedestroy($this->imageResized);
+        return $success;
     }
 }
 

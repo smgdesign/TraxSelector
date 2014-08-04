@@ -13,7 +13,7 @@ require_once ROOT . DS . 'lib' . DS . 'logging' . DS . '__init.php';
 require_once ROOT . DS . 'lib' . DS . 'codes.php';
 
 define('debug', 'develop');
-define('uploadDir', $_SERVER['DOCUMENT_ROOT'].'/public/img/items/');
+define('uploadDir', __DIR__.'/..'.'/files/');
 define('verbose', false);
 $confArray = array();
 $confArray['db'] = array();
